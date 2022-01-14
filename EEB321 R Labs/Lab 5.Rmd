@@ -1,0 +1,116 @@
+---
+title: 'Lab 5: Competition and Coexistence'
+author: "Emma Walker"
+date: "9/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+setwd("C:/Users/abuga/OneDrive/Desktop/EEB321 Labs")
+getwd()
+```
+
+## Background
+In 1975, Jared Diamond proposed a set of rules that could be used to explain species distribution patterns in communities. His first rule was that there are “forbidden species combinations”, or combinations of species that never coexist because they exclude each other through competition. Although there is abundant experimental evidence that some species never do coexist, the specific mechanisms that determine if species will be able to coexist or not remain controversial. The leading hypothesis for the last 50 years has been that species that are too similar in their resources requirements will exclude each other through competition, a hypothesis known as limiting similarity. However, the validity of this hypothesis has been debated in recent years. In this lab, you will be working with population growth models to vary the degree of similarity between competing species, and see why similarity is not always bad for coexistence.
+
+## Objectives:
+1. Link information on the biology of species to possible competitive outcomes 
+2. Gain familiarity with population growth models, and how they can be used to visualize and understand competition
+3. Use population growth models to predict coexistence or exclusion between competitors that differ in similarity, and think conceptually about the biological interpretation
+
+**Submit your answers to the questions below along with the graphs you generate** 
+
+## PART A. PREDICTING COEXISTENCE BASED ON SPECIES RESOURCE USE
+Imagine that Galapagos finch species A through D shown below are competing for seed resources on a single island.
+
+! [Alt text] (/Users/abuga/Desktop/images/GFinches.jpg)
+
+All of the finch species are seed eaters, but each differ in terms of the size of seeds that they prefer to eat, and how many seeds they require per day in order to produce a single offspring—shown in the diagram (for example, species B prefers large seeds, and requires two seeds per day to reproduce). These two types of differences in resource use ultimately determine which pairs of species can coexist, and which pairs will competitively exclude each other. 
+
+**1. Based on what you have learned in class and in your pre-lab presentation, select the correct answers from the following sentence, and explain your reasoning in 2 sentences max: [3 pts]** 
+
+Differences in **[seed size preference/# of seeds required to produce offspring] might result in a stabilizing difference** versus **[seed size preference/# of seeds required to produce offspring] might result in a fitness difference.** 
+
+**2. The size and number of seeds that each finch species consumes is indicated in the diagram above. Use this information to fill in boxes I to IV in the graph below, each with the letters of two species that would lead to the outcome indicated in the graph. Leave box V blank for now. Explain your reasoning in ~2 sentences. [2pts]**
+
+! [Alt text] (/Users/abuga/Desktop/images/Mordecai.jpg)
+
+**3. In the finch example, we consider seeds to be the resource for which finches compete. Use this example to consider how differences in resource use between species alters coexistence. When are differences in resource use beneficial to coexistence, and when might they limit coexistence? Explain your reasoning in ~2 sentences. [2 pts]**
+
+
+## PART B. GETTING TO KNOW THE MODEL
+In part A, we used seed size preference and number of seeds required to produce offspring as proxies for the degree of stabilizing differences and fitness differences between competing finch species. In reality, many other morphological and behavioural characteristics might also affect the degree of stabilizing differences and fitness differences (e.g., timing of the breeding season, nest site preferences, etc.). As a result, ecologists are not usually interested in specific traits, but rather, how the population growth rates of two species are altered under varying degrees of interspecific and intraspecific competition.
+
+The Beverton-Holt discrete-time model is an example of a model that can be used to estimate competitive differences between two species (species i and j):
+
+\begin{equation}
+\tag{1}
+N_{i(t+1)}=\frac{N_{i(t)}\lambda_i}{1+\alpha_{ii}N_{i(t)}+\alpha_{ij}N_{j(t)}}
+\end{equation}
+
+\begin{equation}
+\tag{2}
+N_{j(t+1)}=\frac{N_{j(t)}\lambda_j}{1+\alpha_{jj}N_{j(t)}+\alpha_{ji}N_{i(t)}}
+\end{equation}
+
+In this model, λi and λj is the maximum number of offspring that can be produced by species i and j when they are grown at very low densities (i.e., when they are not competing). αii is the strength of intraspecific competition of species i on itself, and αij is the interspecific effect of species j on species i. Conceptually, it might help to think of α in terms of seed size preferences, for example, αij = 0.25 means that species i and j prefer to eat seeds of the same sizes 25% of the time (see fig. below).
+
+! [Alt text] (/Users/abuga/Desktop/images/GFinches2.jpg)
+
+Similarly, we could think of λi and λj in terms of the number of seeds required by species i and j to produce offspring; if λi = 20 and λj = 10, then we could think of species i as being able to produce twice as many offspring than species j from the same number of available seed resources. 
+
+Using the "coexsim" function provided in this week's lab folder, you will vary the parameter values (e.g., αij, αii, λi, etc.). DO NOT OPEN the "coexsim - DO NOT OPEN.r" file and/or alter it's contents, or the model will not work properly. Instead simply make certain the file is saved in your current working directory and use the following to load it into R.
+
+```{r, eval=FALSE}
+source("coexsim - DO NOT OPEN.r")
+```
+
+To get a feel for how the model works, try out different parameter values and starting population sizes (Ni and Nj at time 0). For this exercise, assume that the rates at which different seeds are available in the environment is similar for all seed sizes, as is the amount of seeds eaten by each species. This would mean that that you would set αii = αjj and αij = αji. To visualize how altering these values change the population dynamics of two competing species, create a graph with Timestep (t) on the x-axis and Population size (N) on the y-axis. Answer the following questions:
+
+**4. True or false: the Beverton-Holt model is density-dependent. Explain your reasoning in one sentence. [1 pt]**
+
+## PART C. PREDICTING COMPETITIVE OUTCOMES: INVADING WHEN RARE
+Now that you have spent some time becoming familiar with the Beverton-Holt model, particularly in terms of how varying its parameters changes the dynamics of competing species, you will apply this knowledge to predict competitive outcomes. The ‘invasion criteria’ is used to assess whether or not species can coexist: if both species can increase in population size when at low densities and their competitors are at their equilibrium densities, then both species can invade when rare and are predicted to coexist. If one or none of the competitors can invade when rare, then those competitors are not predicted to coexist.
+
+You will use the ‘coexsim’ function to predict coexistence between the 5 competitive pairs listed in the table below. To predict the outcome of competition for each competitive pair, you will run the model with only species i present initially, until i reaches its equilibrium density. Once equilibrium has been reached, you will introduce one individual of species j, and continue the simulation until both species reach their equilibrium densities. You will then repeat these steps with only species j present initially. This method will allow you to see if each species pair meets the invasion criteria.
+
+```{r, eval=FALSE}
+#Fill in the parameter values you want input in the model below and in absence of species j
+j.absent.data<-coexsim(aii=, aij=, li=, aji=, ajj=, lj=, ni=, nj=, years=50)
+#look at the data to see what the equilibrium density of species i in absence of species j is and record the year this was reached
+#Now run the model with the same parameter values but with species i beginning at it's equilibrium density in absence of species j and 
+#species j present
+j.present.data<-coexsim(aii=, aij=, li=, aji=, ajj=, lj=, ni=, nj=, years=50)
+#combine the data from before species j was added (prior to i reaching equilibrium in it's absence) and after j was introduced
+#HINT: to do this just use the following code replacing "eq.year" with the year i reached equilibrium in absence of j
+data<-rbind(j.absent.data[eq.year,],j.present.data)
+data$year<-seq(1,nrow(data),1) #this will just add a column to your data giving the years
+
+#repeat with i absent initially and j reaching equilibrium, then introducing i
+i.absent.data<-#...use coexsim here as above...
+i.present.data<-#...use coexsim here as above...
+#...combine the data and add the years to the data as above...
+```
+
+**5. The following table provides you with parameters values for five different simulations that can be plugged in to the Beverton-Holt model equation. For each simulation, determine if species i and j can invade when rare, and use that information to determine if those species are expected to coexist or not. Then, match each simulation to one of boxes I to V in fig. 1 from Part A based on your results (each box from Fig. 1 can be used once). Fill out the table with your answers and include all of your graphs on a single page (there should be 10 in total—they can be small, but make sure they have proper axes titles, legends, etc.). [10 pts – 5 points for table, 5 points for figures]**
+
+Simulation | aii | aij | ajj | aji | li | lj | Can i invade? | Can j invade? | Can they coexist? | Box from fig.1 |
+-----------|-----|-----|-----|-----|----|----|---------------|---------------|-------------------|----------------|
+1          |  1  |  1  |  1  |  1  | 10 | 10 |               |               |                   |                |
+2          |  1  |  1  |  1  |  1  | 10 | 20 |               |               |                   |                |
+3          |  1  | 1.3 |  1  | 1.3 | 10 | 10 |               |               |                   |                |
+4          |  1  | 0.3 |  1  | 0.3 | 10 | 10 |               |               |                   |                |
+5          |  1  | 0.3 |  1  | 0.3 | 20 | 10 |               |               |                   |                |
+
+**6. At first glance, simulations 2 and 3 appear to generate similar coexistence outcomes. In what key way is the dynamics of two competing species (i) the same and (ii) different between these two simulations? Explain your reasoning in ~2 sentences. [2 pts]**
+
+
+**7. Conceptually, what is a ‘priority effect’, and how do your results from simulation 3 support this definition? Explain your reasoning in ~2 sentences. [2 pts]**
+
+
+**8. What criteria must be met in order to generate a priority effect that precludes coexistence, rather than a stabilizing difference that promotes coexistence? Explain your reasoning in 1 sentence max, interpreting the parameter values in biological terms. [1 pt]**
+
+
+**9. In simulation 1, the competitive dynamics of species i and j are considered ‘neutral’. How do your results support this, and why might chance events that alter population sizes be particularly influential for the coexistence of two species when one is invading when rare? Explain your reasoning in ~2 sentences. [2 pts]**
+
+

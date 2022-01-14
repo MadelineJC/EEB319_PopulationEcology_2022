@@ -1,0 +1,184 @@
+---
+title: "321-Lab1-RMD"
+author: "Leila Forsyth"
+date: "July 30, 2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+tinytex::install_tinytex()
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = "hide",error = FALSE,warning = FALSE,message = FALSE)
+```
+
+
+## Setting up R
+You need to first paste the needed .csv files onto your desktop
+
+Next, you will set your working directory using the following code:
+
+> setwd("C:/Users/UTorID/Desktop") 
+
+```{r, set working directory, include=FALSE,echo=FALSE}
+setwd("C:/Users/abuga/Dropbox/EEB321 Winter 2018 Shared Folder/2020- RMD Course development/Lab 1 Alpha Diversity -complete") 
+```
+
+If you are using your own computer, change this directory to your desktop. Note that the slashes are forward facing /
+
+Now you will install the packages (software) you need for the analyses -- if you are using your own computer, you will need to run the following "install.packages" lines.
+
+To install packages, remove the # and enter the following lines in R:
+> install.packages('ggplot2')
+> install.packages('plyr')
+> install.packages('vegan')
+
+
+Once the packages are installed, you can run the following code:
+
+```{r, installing packages}
+library(ggplot2)
+library(plyr)
+library(vegan)
+```
+
+Note: If you are curious about any of the functions we use, or are confused about how these functions are written, you can access information about that function by typing "?" followed by the name of the function (no spaces).
+
+
+##PART B: SIMPLE INDICES OF ALPHA DIVERSITY 
+
+Read in the data for the bird communities. Use the head() function to see the top 5 rows of the data frame you just input.
+```{r, reading in data}
+birds <- read.csv("bird_community_2019_matrix.csv", row.names = 1)
+head(birds) 
+
+#Make sure the data copied in properly (this will give you the top few lines)
+```
+
+```{r, calculating species richness, results='show'}
+#The function "specnumber" gives you the number of species in each community
+SR <- specnumber(birds)	
+SR
+#We have created a new set of data, "SR", which records the species richness of each community
+```
+
+
+Lets calculate rarefaction curves for all communities, then compare those values to the observed number of species (SR above).
+
+```{r, calculating rarefaction curves,fig.show='hide'}
+rarecurve(birds) 		
+
+#We will now construct approximate confidence intervals for these curves
+community.N <- rowSums(birds)
+smallest.N <- min(community.N)
+lines(x = c(smallest.N, smallest.N), y = c(0, max(SR))) 
+#Note:The line shows the largest number of individuals at which all communities can be compared
+
+```
+
+
+Now we will create a vector (a string of numbers) across which we are choosing to rarefy, from 1 individual to the total number in the smallest community
+```{r, calculating rarefaction}
+N <- seq(1:min(community.N)) 
+
+rare <- rarefy(birds["A", ], N, se = TRUE)  
+#these show values of S calculated through rarefaction,
+#se=TRUE means that the function is also giving you the standard error of the rarefaction
+#You can change the community by switching d$A to d$B (or any other community)
+
+rare 
+```
+
+
+Now lets plot these rarefaction curves for each community using your new 'rare' dataframe.
+
+```{r, plotting rarefaction for each community,fig.show='hide'}
+
+plot(
+  N,
+  rare[1, ],
+  type = "l",
+  lwd = 3,
+  xlab = "Observed Number of Species",
+  ylab = "Rarefied Number of Species",
+  ylim = c(1.2, 3)
+) #this makes the basic rarefaction curve
+
+lines(N, rare[1, ] + 2 * rare[2, ])  #these next two lines of code add lines to the plot showing PLUS and MINUS 2 standard errors (calculated in the last section)
+lines(N, rare[1, ] - 2 * rare[2, ])  #2 standard errors are approximately a 95% confidence interval
+#for your assignment you can simply copy and paste this plot
+
+#Note:to get these confidence intervals for other communities, rerun the code above, switching "A" with the community of choice
+
+```
+
+
+Now we will move on and compare different diversity metrics (Simpson and Shannon). We will then combine all our indices into one data frame
+Remember that you have already calculated S (species richness)
+```{r, calculating simpson and shannon}
+
+#lets begin by calculating simpson's index
+simp.inv <- diversity(birds, index = "invsimpson")  #The index "invsimpson" calculate 1/D
+
+#We can now use the above-calculated simpsons INDEX to calculate simpson's EVENNESS
+#to do this we simply multiply 1/D (what we just calculated) by 1/S
+
+simp.even <- simp.inv / SR		#This divides 1/D for each site by its species richness. Note that you have generated simp.inv and SR above
+simp.even
+
+
+#we can do the same for Shannon's diversity
+shan <- diversity(birds, index = "shannon")  #The index "shannon" calculates shannons's index (H')
+exp.shan <- exp(shan)                    #shannon diversity is often transformed to exp(shan):
+
+#We can now use Shannon's diversity to calculate Shannon's evenness
+#Shannon's evenness is simple shannon's diversity divided by the natural logarithm (ln, although in R this is denoted as "log") of species richness
+
+shan.even <- shan / (log(SR))   #calculate shannon's evenness for the remaining communities in the same way
+shan.even
+
+#let's put combine the diversity and evenness indices that we have calculated into a table (called dataframe in R)
+
+data.frame(SR, simp.inv, simp.even, shan, shan.even, exp.shan)
+
+```
+
+
+
+#PART C: SPECIES-ABUNDANCE DISTRIBUTIONS
+
+While the diversity metrics calculate in "Part B" provide important summaries of diversity, they don't tell the whole story (see lab handout).
+We can get a better understanding of diversity by comparing Species-abundance curves among communities.
+
+Lets plot species-abundance curves for each community.
+
+```{r, calculating rank abundance curves}
+#this first bit of code creates a function that will do the plotting for us. you need to enter it into R, but do not change it
+
+rank.abund <- function(x, name) {
+  tmp <- x[name, ]
+  tmp2 <- tmp[tmp > 0] / sum(tmp)
+  tmp3 <- tmp2[order(-tmp2)]
+  plot(
+    1:length(tmp3),
+    tmp3,
+    log = "y",
+    type = "b",
+    ylim = c(0.01, 1),
+    xlab = "Rank",
+    ylab = "Relative Abundance",
+    main = paste("Community", name)
+  )
+}
+```
+
+Now let's plot the rank abundance curves.
+```{r, echo=TRUE, include=TRUE,results='show'}
+rank.abund(birds, "A") 
+#Note:each point represents a species in community "A"
+#this graph shows that there is one species with a relative abundance of 0.9 and another with 0.1
+#species that are absent (abundance of zero) are not included
+```
+Repeat for all communities, and do not hand in the graph for community A above.
+

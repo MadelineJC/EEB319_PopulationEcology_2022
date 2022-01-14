@@ -1,0 +1,187 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+```{r setup}
+knitr::opts_knit$set(root.dir = 'C:/Users/abuga/Desktop/Rworkspace')
+```
+
+---
+title: "EEB321 Introduction to R"
+author: "L. Forsyth, L. Krichel, E. Walker"
+date: "January, 2020"
+output: pdf_document
+---
+
+## 1. What is R and how do you obtain it?
+R is a computer programming environment. It is open-access (i.e. free!) and is maintained/developed by its users, who write and upload new "packages" and "functions" based on R's language and basic toolkit. Statistical packages are just the tip of the iceberg in terms of R's capabilities -some of its others include computer simulations, mathematical operations, GIS/mapping, and (vector-based) graphics. More details and downloads can be obtained from http://cran.r-project.org/.
+
+First if it's not already, download and install R, followed by R studio, which you will find yourself using not only for this course but likely for much of your scientific careers. Now is the time to get used to it! R studio is just R but with a user interface (GUI) that keeps your work environment organized rather than creating lots of sepperate windows like basic R does.
+
+## 2. R Studio Windows
+The first thing you will notice is that there are four different boxes on your screen. The upper left box is where you will write your scripts or code for your analyses line by line. Here your code can be saved and re-run.  The lower left box is where that code will be run. You can also type code in here to be run but none of this will be saved, so it is best to avoid this for now. The upper right hand box is where you will find any objects or variables you have defined in the session (don't worry about this right now). And finally, the lower right box is where any figures you plot will appear. 
+
+## 3. Working directories (telling R where to look for files and save files)
+It will be easiest to start with a folder for your R projects on your desktop and then set R to work within that folder. 
+
+If you are using the lab computers, set your path using:
+'setwd("C:/Users/UTorID/Desktop")' replacing 'UTORID' with your UTORID
+Since you are setting the path to the lab computer's Desktop, make sure that the data is on your desktop. 
+
+Or if you are using your own computer and/or want to work in a folder. Simply find out the working directory of that folder by simply right clicking on the folder. A menu will popup and from select properties. Here it will tell you that folder's location. The working directory address is simply given by the location and name of that folder. eg. C:/Users/Emma/Desktop/Rworkspace
+Note: On windows computers it will use backslashes that must be changed to forward slashes (/) if you copy and paste adresses in
+Set your R working directory to be within that folder:
+To do this type 'setwd("insert working directory address here")'
+
+e.g. I would type
+```{r, eval=FALSE}
+setwd("C:/Users/abuga/Desktop/Rworkspace")
+```
+Note:To execute/run commands, hilight the lines you want to execute and press Ctrl + Enter (or Command + Enter) to execute. 
+
+Now R will look for and store files within this folder (AND WITHIN THIS FOLDER ONLY!)
+
+## 4. Reading Data into R
+It's important that you have your data appropiately formatted so that R can read it. This you can do in excel, but then must be saved as a ".csv" file (comma sepperated values file, just hit save as and select this option if it's not already saved as one). First of all R (and many other computer programs) do not like column/variable names with spaces or special characters. So keep this in mind when making your own data columns in Excel and R. R also does not like missing values. Instead if you are missing data in a cell, you should write "NA" as a place holder for that missing data so that R can recognize and be told to ignore this.
+
+**1) Open your data file in Excel and make sure all the column/variable names have no special characters and are shorter than 10 letters (it's not necessary they are that short, it just saves you typing long names in R).**
+
+**2) Save file the in .csv format, and store on the desktop or in your working folder (MAKE SURE THIS IS WHERE YOU HAVE SET YOUR WORKING DIRECTORY TO).**
+
+**3) Import the data file into R, type 'read.csv("insert name of file here")'.**
+
+```{r}
+data<-read.csv("butterfly.csv")
+```
+Here the function `read.csv()` tells R that you want it to read in a csv file. `"butterfly.csv"` specifies the file you want it to read in (MAKE SURE THIS IS EXACT). You assigned it to an object `data` using `<-`.Which will allow you to "call" up the data anytime in the R session simply by typing `data`.
+
+Once the data is inputted, this should pop up in the Global Environment (usually at the top right of the RStudio interface).
+
+Now, anytime you want to pull up or "call" your dataframe, simply execute:
+```{r, eval=FALSE}
+data
+```
+This allows you to visually inspect the data rows (i.e. make sure it was created correctly, as well as remind yourself of the column names)
+For large datasets or just to look at your column names quickly, you might just want to take a peek at the first couple rows of the data. To do this execute:
+```{r}
+head(data)
+```
+
+**In lab, we will be using the datasets butterfly.csv and butterfly2.csv.**
+You can change the name of the object to something that represents the dataset (e.g. `butterfly` and/or `butterfly2` instead of `data`).
+
+
+## 5. Implementing Functions in R
+Congratulations! You've already begun doing this. A function is any command that tells R to do something to something, always followed by parentheses (). Functions you have used so far include `install.packages()` which told R to install a specified package, `setwd()` which told R to set the working directory to what you specified it to be, and `read.csv()` which told R to read in a .csv file. While it is not always obvious how to specify your statements/commands for any given (often user-created) function, typically within the parentheses you will first specify the data/object and/or variable to analyze, followed by any additional optional parameters.
+
+For example, to implement the function `summary` (i.e. calculate basic summary statistics) for each variable within `data`, in the Console window, execute the following:
+```{r}
+summary(data)
+```
+
+To get information on any function, such as what parameters you need to specify or how to use it simply put a `?` before the function. This will bring up the relevant information for you in the help window on the bottom right corner where your plots appear.
+e.g.
+```{r, eval=FALSE}
+?summary()
+```
+
+
+## 6. Working with data in R
+In R, datasets in the form of a table are called dataframes. R has built in functions that can be used to explore the content of a dataframe. The `head()` function shows us the first 6 rows of the dataframe. The `tail()` function shows us the last 6 rows of the dataframe.
+
+Apply these functions to your butterfly dataset.
+**What is the abundance at time 4? What about time 100?**
+
+## 7. Plotting in R
+**1) Plot abundance by time using the `plot()` function.** This will normally appear in the bottom left pane of the RStudio Interface (under the tab labeled Plots).
+The general form of the command you will give should be: 
+'plot(y ~ x, data = dataframe.object.name)'
+
+**2) Add a logistic curve to the plot using the `curve()` function** in this format:
+'curve(expr = formula, to = max value on x axis, add = T)'
+
+The formula we will be using is: `L/(1+exp(-k*(x-xo)))` where:
+```{r, eval=FALSE}
+L = 1000 # gives the max value on y axis
+xo = 50 # xo is the x value at the curve's midpoint - here it cannot be zero
+k = 0.15 # gives the steepness of increase
+```
+
+**3) Run each parameter in the formula.** This will pop up in the Global Environment. 
+
+**4) Input the other butterfly dataframe using the `read.csv()` function again.** Make sure you assign this second dataframe to a new object so that the first butterfly dataframe doesn't get overwritten (e.g. `butterfly2`). eg.'butterfly2 <- read.csv()'
+
+**What values are in the first row of this new dataframe? **
+
+**5) Plot wingspan vs length and make the different species different colours.** This can be done by adding a third argument to the `plot()` function like so:
+'plot(y ~ x, data = dataframe.object.name, col = )'
+
+**6) Subset the dataframe into 2 data frames, 1 for each species.**
+To do this, use the `subset()` function.
+eg. 'subsetdataname <- subset(dataframe, column to subset == "some condition")'
+
+This selects rows in a dataframe that meet some condition for a specific column. Assign the subsetted dataframes to objects that represent the identity of each species (e.g. blue). Remove the "species" column in each new dataframe using `dataframe$columntoberemoved <- NULL`.
+
+## 8. For Loops in R
+For loops are used to repeat a specific block of code for every number in a sequence. This is the syntax for a for loop:
+  
+```{r, eval=FALSE}
+for (i in sequence) 
+  {
+  perform some operation 
+  }
+```
+
+Here is an example:
+```{r, eval=TRUE}
+sequence <- 1:10 # Consider a sequence from 1 to 10
+
+for (i in sequence) { # for each value in the sequence
+  
+  print("Community ecology is great!") # the operation we want to perform
+  
+} # end
+```
+
+In the console, notice that the output of the for loop prints "Community ecology is great!" 10 times.
+
+**Use a for loop to print the mean wingspan and length of each species.** If you want to select a certain row or column of a dataframe, you can use the `[]` with the format 'dataframe[row#,column#]'
+
+Use the `print()` function to print your output means. Use the 'colnames(dataframe[,col#])' function to print the name of each variable after the mean value.
+
+Next, we will use an if...else statement inside a for loop to find specices that have a length of > 7cm. Assign these individuals into a new object. Run this example to see the output and syntax of if...else statement
+
+```{r, eval=TRUE}
+x <- 2
+
+if (x > 5){
+  print ("Win")
+  } else { print ("Loss")
+  }
+```
+
+In the console, notice that because the condition for the if statement was not met, the else statement was executed.
+
+This only works for one value, and so you need to embed this inside of a for loop so that it runs through each row. Here, you can replace the `print()` line to print `"large"` if individuals are > 7cm, or `"small"` if individuals are < 7cm
+
+Use this format:
+
+```{r, eval=FALSE}
+for(row in 1:nrow(butterfly2)){
+  
+  subsetname <- butterfly2[row, "columnnametosubset"]
+  
+  if (subsetname > 7){
+    
+    print("Large")
+    
+  } else {print("Small")
+      
+  }}
+```
+
+Change `dataframe` to your butterfly2 dataframe name.
+Change `subsetname` to a new object to pull out the length column into.
+Change `columnnametosubset` to the name of the column we are looping through (i.e. length).

@@ -1,0 +1,119 @@
+---
+title: "321-Lab6-RMD"
+author: "Leila Forsyth"
+date: "July 30, 2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = "hide",error = FALSE,warning = FALSE,message = FALSE)
+```
+
+
+## Setting up R
+You need to first paste the needed .csv files, and the DO NOT OPEN r script onto your desktop
+
+Next, you will set your working directory using the following code:
+
+> setwd("C:/Users/UTorID/Desktop") 
+
+```{r, set working directory, include=FALSE,echo=FALSE}
+setwd("C:/Users/abuga/Dropbox/EEB321 Winter 2018 Shared Folder/2020- RMD Course development/Lab 6 Neutral Theory -check Emma") 
+source('eeb321 neutral lab functions - DO NOT OPEN.r')
+library(vegan)
+```
+
+
+Now we will set up and load the functions that we will run, using the DO NOT OPEN r script.
+```{r}
+source('eeb321 neutral lab functions - DO NOT OPEN.r')
+```
+
+Now we will install the 'vegan' package using the code:
+```{r}
+install.packages("vegan", dependencies=T,repos="http://R-Forge.R-project.org")
+```
+
+If this does not work, run the code:
+```{r}
+install.packages("vegan")
+```
+
+Once installed, run the code:
+```{r}
+library(vegan)
+```
+
+
+Note: you only need to install packages to your computer ONCE, afterwards, you can always call on the package using the library() or require() functions.
+
+Now we will run an example graph for you to get familiar with the parameters.
+
+Enter the code:
+```{r}
+bh.display(aii=1,aij=1,li=11,aji=1,ajj=1,lj=11,ni=5,nj=5,years=10)
+```
+
+aii= intraspecific competition effect for species i
+aij= interspecific competition effect for species i on j
+li= lambda for species i
+aji= intraspecific competition effect for species j
+ajj= interspecific competition effect for species j on i
+lj= lambda for species j
+ni= starting abundance of species i
+nj= starting abundance of species j
+years= number of years to run the simulation
+
+Play around with the parameters to understand how competition and populaiton growth rates (lambda) influence the coexistence dynamics.
+
+## Example figure:
+```{r, example figure,fig.show=TRUE}
+n1<-bh.display(aii=1,aij=1,li=11,aji=1,ajj=1,lj=11,ni=5,nj=5,years=10)
+n1
+```
+
+
+To get the beta diversity and extinction results when each species starts at the same abundance, run the code:
+
+```{r}
+bh(aii=1,aij=1,li=11,aji=1,ajj=1,lj=11,ni=5,nj=5,years=10) 
+```
+
+
+## EXERCISE 1: Neutral 1
+
+Modify this code to answer the questions in exercise 1:
+
+```{r}
+bh(aii=1,aij=1,li=11,aji=1,ajj=1,lj=11,ni=5,nj=5,years=10) 
+```
+
+## EXERCISE 2: Neutral 2
+
+Modify this code to answer the questions in exercise 2:
+
+```{r}
+bh(aii=1,aij=1,li=21,aji=1,ajj=1,lj=21,ni=10,nj=10,years=20)
+```
+
+
+## EXERCISE 3: One winner
+
+Modify this code to answer the questions in exercise 3:
+
+```{r}
+bh(aii=1,aij=1,li=7,aji=1,ajj=1,lj=10,ni=1,nj=9,years=20)
+```
+
+## EXERCISE 4: Coexistence 
+
+Modify this code to answer the questions in exercise 4:
+
+```{r}
+bh(aii=1,aij=1,li=15,aji=1,ajj=1,lj=15,ni=1,nj=14,years=10)
+```
+
+
+

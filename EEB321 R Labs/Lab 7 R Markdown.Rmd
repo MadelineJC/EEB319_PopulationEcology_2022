@@ -1,0 +1,167 @@
+---
+title: "Lab 7: Island Biogeography"
+author: "Emma Walker"
+date: "3/9/2020"
+output: html_document
+---
+
+## Background
+In their seminal work “The Theory of Island Biogeography” (1967), Robert MacArthur and Edward Wilson presented a model of species richness on islands based on **immigration** and **extinction of species**. Species arrive at islands through the process of immigration, which occurs randomly from a mainland pool. The distance of an island from the mainland, the number of species which are not established on the island, and the probability that a given species will disperse from the mainland to the island are the key factors which determine the rate of immigration to the island. Once a species arrives at the island, it goes locally extinct at a rate that is inversely related to the area of the island and that may depend on the number of other species present. 
+
+We will represent these variables in two equations. Immigration rate is defined in **equation 1:**
+\begin{equation}
+\tag{1}
+\lambda_S=\frac{i(p-S)}{fd}
+\end{equation}
+
+where
+
+$\lambda_S=$ immigration rate at a given number of species on an island ($S$)
+$i=$ maximum immigration rate
+$S=$ species richness of the island
+$f=$ scaling factor for distance
+$d=$ distance of the island from the mainland
+$p=$ number of species in the mainland species pool
+
+We will then define the rate of extinction in **equation 2:**
+\begin{equation}
+\tag{2}
+\mu_S=\frac{eS}{a^m}
+\end{equation}
+
+where
+
+$\mu_S=$ extinction rate for a given island with S species
+$e=$ extinction probability for each species per unit area
+$S=$ species richness of the island
+$a=$ area of the island
+$m=$ scaling factor of area
+
+The levels of $i$, $f$, $e$, and $m$ **can only be determined via experiments**. According to the work conducted by MacArthur and Wilson, $i = 0.1$, $f = 0.01$, $e = 0.2$ and $m = 0.25$. 
+
+## Objectives
+1. Be able to estimate the equilibrium species number on a given island using mathematical calculations
+2. Perform a series of exercises using R to understand how each of these factors influences species diversity in islands
+3. Understand what is meant by a “dynamic equilibrium” and how island distance from the mainland and island area influence equilibrium species number
+
+**Submit your answers to the questions below along with the graphs you generate.**
+
+We will be using...
+
+## Section 1. The Mathematics of Island Biogeography
+
+**1.	Theoretically, how are** $\lambda_S$ **and** $\mu_S$ **related when immigration and extinction are at a dynamic equilibrium? (1 point)**
+
+**2.	Write a general equation for finding the dynamic equilibrium of the number of species on a given island (S* is the number of species at equilibrium) [Hint: at equilibrium, what is the difference between the colonization and extinction rate? You need to solve for the number of species]. Why is your equation representative of the dynamic equilibrium? (2 points)**
+
+## Section2. Calculate of expected species richness, immigration, and extinction in R
+
+Use R to calculate and fill in the following data table to explore how species richness, immigration and extinction vary with the fraction of the mainland species pool present on an island ("Fraction of Pool"). 
+
+Fraction of Pool | Species Richness | Immigration | Extinction |
+-----------------|------------------|-------------|------------|
+0                |                  |             |            |
+0.1              |                  |             |            |
+0.2              |                  |             |            |
+...              |                  |             |            |
+0.9              |                  |             |            |
+
+To do this copy paste the following code and fill in the appropiate calculations for "S" ($S$), "Ls" ($\lambda_S$) and "Ms[i]" ($\mu_S$). Note: calculate the island species richness ($S$) based on the fraction of species present on the island ("Fr.pool") and the mainland pool size (p). **Also, remember to use [n] for Fr.pool and S to indicate that calculations should be performed for each of the n values of these (e.g. use Fr.pool[n] and S[n] rather than just Fr.pool and S) when you enter in the equations for each calculation** 
+
+```{r, eval=FALSE}
+biogeo.func<-function(p,a,d,i,e,f,m,Fr.pool){ #tells R that you want to make a function called biogeo.func requiring the parameters p,a,d,i,e,f,m, and Fr.pool
+  S<-rep(NA,11) #sets up S to be filled in with a series of 11 calculated values
+  Ls<-rep(NA,11) #Sets up Ls to be filled in with a series of 11 calculated values
+  Ms<-rep(NA,11) #Sets up Ms to be filled in with a series of 11 calculated values
+  for (n in length(Fr.pool)){ #for each value of Fr.pool do the following calculations:
+  
+  S[n]<-#Write appropiate calculation for S here!!!
+  Ls[n]<-#write appropiate calculation for Ls here!!!
+  Ms[n]<-#write appropriate calculation for Ms here!!!
+    
+  }
+  return(data.frame(Fr.pool, S, Ls, Ms))} #tells R that this function should output a data frame containing Fr.pool,S,Ls, and Ms
+```
+
+```{r, eval=TRUE, echo=T} 
+#CHECK/ANSWER
+biogeo.func<-function(p,a,d,i,e,f,m,Fr.pool){ #tells R that you want to make a function called biogeo.func requiring the parameters p,a,d,i,e,f,m, and Fr.pool
+  S<-rep(NA,11) #sets up S to be filled in with a series of 11 calculated values
+  Ls<-rep(NA,11) #Sets up Ls to be filled in with a series of 11 calculated values
+  Ms<-rep(NA,11) #Sets up Ms to be filled in with a series of 11 calculated values
+  for (n in 1:length(Fr.pool)) { #for each value of Fr.pool do the following calculations:
+  
+  S[n]<-Fr.pool[n]*p
+  Ls[n]<-(i*(p-S[n]))/(f*d)
+  Ms[n]<-(e*S[n])/(a^m)
+    
+  }
+  return(data.frame(Fr.pool, S, Ls, Ms))} #tells R that this function should output a data frame containing Fr.pool,S,Ls, and Ms
+```
+
+Then run this function by copy pasting in the following code.
+```{r, eval=FALSE}
+Fr.pool<-seq(0,1,0.1) #tells R you would like Fr.pool to be a sequence from 0-1 increasing by on a 0.1 interval
+data<-biogeo.func(p=1100,a=300,d=200,i=0.1,e=0.2,f=0.01,m=0.25,Fr.pool) #runs the function you created and assigns the output to data
+```
+
+```{r, eval=TRUE, echo=T}
+#CHECK/ANSWER
+Fr.pool<-seq(0,1,0.1) #tells R you would like Fr.pool to be a sequence from 0-1 increasing by on a 0.1 interval
+data<-biogeo.func(p=1100,a=300,d=200,i=0.1,e=0.2,f=0.01,m=0.25,Fr.pool) #runs the function you created and assigns the output to data
+```
+
+**3.	What happens to immigration rate as species richness increases? What happens to extinction? (2 points)**
+
+**4.**	Using the data you generated, in R or Excel, produce a plot of immigration and extinction versus species richness. Be sure to include a legend, axis labels, and a caption. **Where on this graph do you expect to find equilibrium? Mark and label this point on your graph (you can use a pen after printing your assignment). (2 points)** 
+
+**5.**	Re-visit the equation from section 1, question 2 – **Using the equation you came up with, and the R code provided below, write a function to calculate the species equilibrium. Test this by calculating and solving by hand. Provide all hand calculations and R code/output in the assignment to be handed in. (2 points)**
+
+```{r, eval=FALSE}
+eq.func<-function(p,a,d,i,e,f,m){
+  S.star<-#Write appropiate calculation for S* in here
+  print(S.star)}
+#CHECK
+eq.func(p=1100,a=300,d=200,i=0.1,e=0.2,f=0.01,m=0.25)
+```
+
+```{r, eval=TRUE, echo=T}
+#CHECK/ANSWER
+eq.func<-function(p,a,d,i,e,f,m){
+  S.star<-p/(((e*f*d)/(i*(a^m)))+1)
+  print(S.star)}
+#CHECK
+eq.func(p=1100,a=300,d=200,i=0.1,e=0.2,f=0.01,m=0.25)
+```
+
+6.	Using your biogeo function, complete the data table below, to explore the effects of island area on extinction ("Ms") and distance from the mainland on immigration ("Ls") and species richness by varying each parameter. Use 20, 300, 3000 square metres for small, medium and large islands respectively and 50, 200, 2000 metres for the distance of near, medium and far islands respectively.  **Again, either in R or Excel, plot immigration versus species richness for near, medium, and far islands on a single plot and submit the plot for grading.** Be sure to include a legend, axis labels, and a caption. **Is the relationship between proximity and immigration positive or negative? (2 points – 1 for graph, 1 for specifying the relationship).**
+
+Fraction of Pool | Species Richness | Immigration (d=small) | Immigration (d=med) | Immigration (d=big) | Extinction (a=small) | Extinction (a=med) | Extinction (a=big) |
+-----------------|------------------|---------|-----------|--------|----------|-----------|----------|
+0                |                  |         |           |        |          |           |          |
+0.1              |                  |         |           |        |          |           |          |
+0.2              |                  |         |           |        |          |           |          |
+...              |                  |         |           |        |          |           |          |
+0.9              |                  |         |           |        |          |           |          |
+
+
+```{r, eval=TRUE, echo=T}
+#CHECK/ANSWER
+#They could write loops to do this but most likely will just copy paste the code and manually put in the new parameters to get the data to then manually fill an Excel table, e.g.
+Fr.pool<-seq(0,1,0.1)
+NearnSmall.data<-biogeo.func(p=1100,a=20,d=50,i=0.1,e=0.2,f=0.01,m=0.25,Fr.pool)
+NearnMed.data<-biogeo.func(p=1100,a=300,d=50,i=0.1,e=0.2,f=0.01,m=0.25,Fr.pool)
+FarnBig.data<-biogeo.func(p=1100,a=3000,d=2000,i=0.1,e=0.2,f=0.01,m=0.25,Fr.pool)
+#and so on...
+```
+
+## Section 3. Stochastic Island Biogeography Dynamics and Species Turnover
+
+Download "stochastic_biogeo_func.r" from Quercus. 
+Use the following R code to load this function into R. Note: make certain your working directory is set correctly for where you have saved this. if necessary, reset this using setwd(). Refer back to the R tutorial if you have to.
+
+```{r, eval=T}
+source("stochastic_biogeo_sim.r")
+```
+
+

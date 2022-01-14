@@ -1,0 +1,378 @@
+---
+title: "EEB321 Lab 2: Measuring Community Similarity"
+author: "Leila Forsyth and Leila Krichel"
+date: "January 2021"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = "hide",error = FALSE,warning = FALSE,message = FALSE)
+```
+
+```{r, set working directory, eval = FALSE, include=FALSE,echo=FALSE}
+setwd("C:/Users/leilaforsyth/Dropbox/EEB321 Winter 2018 Shared Folder/2020- RMD Course development/Lab 2") 
+library(vegan)
+```
+
+# Background #
+
+So far, we have learned how to quantify species diversity within sites (**alpha diversity**). An equally important component of diversity is the *similarity* or *dissimilarity* in species composition between sites (**beta diversity**). For example, imagine a network of pond communities that each contain five fish species. Diversity across the entire network of ponds would be very high if no two ponds had species in common. On the other hand, diversity would be very low if all ponds contained the same five species. Other common uses of beta diversity include quantifying how a particular manipulation (e.g. nutrient addition) may affect community composition and similarity, the effectiveness of a restoration effort in returning a community to its original species composition, or how biological invasion may impact beta diversity measurements. More generally, community ecologists may simply be interested in describing how community composition changes through space or time. Either way, we need some way of condensing information about the abundance of multiple species at two or more sites into a single similarity (or dissimilarity) metric.
+
+**Objective:** Learn how to compare communities (**beta diversity**) with simple indices.
+
+<center>
+
+![](/Users/FOOKRI/Desktop/mark_breakdown.png)
+
+</center>
+
+## Setting up R ## 
+
+From Quercus, save `bead_communities2021.csv` and `Plant_communities_abundance.csv` onto your desktop. This will be your working directory, which is where R will look for these files. Use the code below to set the working directory as your desktop. You might need to modify the file path if you're working on a personal computer. 
+
+```{r eval=FALSE, include=TRUE}
+setwd("C:/Users/UTorID/Desktop") # Windows
+setwd("/Users/UTorID/Desktop") # Mac 
+```
+
+Now we will install the `vegan` package using the code:
+
+```{r eval=FALSE, include=TRUE}
+install.packages("vegan")
+
+# If this does not work, run 
+# install.packages("vegan", dependencies=T,repos="http://R-Forge.R-project.org")
+```
+
+Once installed, load the package into the current R session.
+
+```{r eval=TRUE, include=TRUE}
+library(vegan)
+```
+
+**Note:** You only need to install packages to your computer ONCE. Afterwards, you can always call on the package using the `library()` or `require()` functions.
+
+## PART A - DIVERSITY OF BEAD COMMUNITIES ## 
+
+Reclaim your bead community from last week and recall the species richness you recorded. Write this value and the theoretical limits (i.e. range of possible values) of each index in the table in Part B. 
+
+Read in `bead_communities2021.csv` from your desktop. This spreadsheet contains the community data for all the bead communities. Note that each row corresponds to a community (i.e. row 1 = community 1) and each column represents a different "bead" species. The values in the table represent species abundance in a given community.
+
+```{r eval=FALSE, include=TRUE}
+# row=1 makes the first row of the dataset column names
+bead_communities <- read.csv("bead_communities2021.csv",
+                             row = 1,
+                             header = TRUE) 
+```
+
+```{r eval=TRUE, include=FALSE}
+# if that doesn't work, try this: 
+
+bead_communities <- read.csv("/Users/FOOKRI/Dropbox/EEB321 Winter 2018 Shared Folder/2021/Lab 2/bead_communities2021.csv",
+                             row = 1,
+                             header = TRUE) 
+
+# replace the path with your own path 
+```
+
+
+
+Estimate species richness and evenness of your bead community. These are calculated using the Simpson indices (1/D and E~1/D~) and Shannon indices (H' and J'). Species richness is calculated using the `specnumber()` function and shannon/simpson diversity using the `diversity()` function in `vegan.`
+
+```{r, calculating indices, eval=FALSE,echo=TRUE}
+
+# Species richness
+SR <- specnumber(bead_communities)
+
+# Inverse simpson
+# index = "invsimpson" calculates 1/D
+simp.inv <- diversity(bead_communities, index = "invsimpson")
+
+# Simpson evenness
+# This divides 1/D for each site by its species richness.
+simp.even <- simp.inv / SR
+
+# Shannon diversity
+# index = "shannon" calculates shannons's index (H')
+shan <- diversity(bead_communities, index = "shannon")  
+
+# Exponential shannon
+exp.shan <- exp(shan)
+
+# Shannon evenness
+shan.even <- shan / (log(SR))
+```
+
+Now combine all of the above indices you've calculated in a table using the code below. This table will contain diversity indices for each community. 
+
+```{r eval=FALSE, include=TRUE}
+df.indices <- data.frame(SR, simp.inv, simp.even, shan, shan.even, exp.shan)
+```
+
+Find the data for your community in the table `df.indices`. This can be done by extracting the row that corresponds to your community. For example, if you're working with community 8, replace 23 in the code below with 8. 
+
+```{r eval=FALSE, include=TRUE}
+df.indices[23, ]
+```
+
+## PART B - QUALITATIVE IMPRESSIONS ## 
+
+Circulate around the lab with your partner, your bead community, and your list of diversity indices. Try to decide which other bead community is most similar to your own, and which is least similar. You may use any criteria you deem appropriate, but focus on species, not their traits (i.e., assume that colour similarity of different species is not meaningful). You don’t need to use any of the diversity indices in your evaluation; your decision may simply be based on visual assessment. Write down the numbers of the best and worst matches in the table below, and note the diversity indices that were calculated for these communities by the other team. These choices need not be reciprocal; that is, the group whose bag you select as most similar to your own need not choose your bag as most similar to theirs.
+
+<center>
+
+![](/Users/FOOKRI/Desktop/indices.png)
+
+</center>
+
+## PART C - SIMILARITY INDICES ##
+
+In conventional statistics, a common way of quantifying correspondence between two variables is correlation. Correlation is defined as the covariance between two variables divided by the product of their standard deviations. One possible way of deciding if two communities are similar would be to measure the correlation in species abundances between the two communities.
+
+Another way to assess similarity between two sites is to start out with a 2 x 2 matrix of mutually exclusive possibilities for each species:
+
+<center>
+
+![](/Users/FOOKRI/Desktop/presence:absence.png)
+
+</center>
+
+Various similarity indices are calculated based on tallying the number of species in each cell of the above matrix. For example, the Jaccard index:
+
+$$
+\begin{aligned}
+\frac{a}{a+b+c} \\
+\end{aligned}
+$$
+
+
+or the Sorenson index, which weighs joint presences more heavily:
+
+$$
+\begin{aligned}
+\frac {2a}{2a+b+c} \\
+\end{aligned}
+$$
+
+In contrast to the above two metrics, which use only presence/absence data, the Bray-Curtis similarity index takes into account the abundances of different species:
+
+$$
+\begin{aligned}
+\frac {2\sum_{j=1}^p min(y_{1j}, y_{2j})}{\sum_{j=1}^p (y_{1j}+y_{2j})} \\
+\end{aligned}
+$$
+
+where $y_{1j}$ is abundance of species $j$ in community 1, $y_{2j}$ is abundance of species $j$ in community 2, and $p$ is the total number of species [$min(y_{1j}, y_{2j})$ is the minimum of the two y values]. The Bray-Curtis index simplifies to the Sorenson index for presence-absence data. Usually, the complement (1 – Bray-Curtis index or 1 – Sorenson index) is used as a measure of *dissimilarity*.
+
+You will use the R code to calculate the **correlation coefficients**, **Bray-Curtis**, and **Sorensen similarities** between your community and the two other communities you chose in Part B.
+
+First, extract the data for your community and the communities that are most and least similar.
+
+**Note:** This code compares community 1 to communities 2 and 3. To specify the right communities, change 1-3 in the lines of code below with the IDs of the communities you're comparing. 
+
+```{r, example bag graphs}
+MyComm <- as.numeric(bead_communities[1,])
+Comm_mostsimilar <- as.numeric(bead_communities[2,])
+Comm_leastsimilar <- as.numeric(bead_communities[3,])
+```
+
+Now plot the relationships between your community and the least/most similar communities. 
+
+```{r eval=FALSE, include=TRUE}
+plot(MyComm, Comm_mostsimilar, pch=16, xlab="My bag", ylab="Most similar") 
+plot(MyComm, Comm_leastsimilar, pch=16,xlab="My bag", ylab="Least similar")
+```
+
+Calculate the correlation coefficient to compare the least/most similar communities using the function `cor.test()`. Look for the value "cor" at the bottom of each output.
+
+```{r eval=FALSE, include=TRUE}
+cor.test(MyComm, Comm_mostsimilar)
+cor.test(MyComm, Comm_leastsimilar)
+```
+
+The code below calculates **Bray-Curtis similarity** using the function `vegdist()`. This function calculates the *dissimilarity* between communities. Since there are different ways to calculate dissimilarity, we need to make sure to specify `method = "bray"`. Finally, because we're interested in *similarity*, we will substract the output of `vegdist()` from 1. 
+
+**Side Note:**: `vegan` defines similarity as 1-index. In the literature, it's dissimilarity that is typically defined as 1-index.  
+
+```{r, bray-burtis}
+bray.curtis.beads <- 1 - vegdist(bead_communities, method = "bray", diag = FALSE) 
+```
+
+The output shows you the Bray-Curtis similarity estimate for each community pairwise comparison. 
+
+Sorenson *similarity* uses presence/absence data to compare communities, so will need to convert the bead community data to reflect that. If a species is absent, it will be indicated by 0. If present, it will be indicated by 1. Note that presence-absence data does not differentiate the abundance of species that are present.  
+
+First, assign `bead_communities` to a new object called `d_pres`. `d_pres` takes the data from `bead_communities` and displays it as presence-absence data. This happens in the second line of code below. Here, all values greater than 0 are converted to 1. 
+
+```{r, sorensen}
+d_pres <- bead_communities 
+d_pres[d_pres > 0] <- 1
+d_pres # this is what the data should look like
+```
+
+Calculating Sorenson *similarity* is like calculating Bray-Curtis *similarity*. The only difference is you're using presence/absence data rather than species abundance data. 
+
+```{r, sorenson index}
+sorenson.beads <- 1 - vegdist(d_pres, method = "bray", diag = FALSE) 
+```
+
+The output shows you the Søreson similarity estimate for each community pairwise comparison. 
+
+**C1: Did your qualitative assessments of similarity match the quantitative assessments calculated in R? If not, why not? [2 pts]**
+
+## PART D - SORTING BEAD COMMUNITIES ##
+
+As a class, and based on the outcome of Part C, agree on a preferred similarity metric. This can be one of the similarity statistics described above, or a new one that you invent. Then, try to organize all the bead communities in your lab section according to similarity/dissimilarity, including the two extreme bead communities. Is it possible to order all the communities along a single axis (i.e., with the most dissimilar communities at opposite ends of that axis), or is more than one axis required?
+
+**D1: Based on this exercise, what is one reason why ordering communities based on similarity is difficult or impossible? [2 pts]**
+
+The process of ordering communities according to similarity/dissimilarity is known as **ordination**. There are several more sophisticated and objective (automated) procedures for doing this, and we will discuss some of these in class. However, the challenges associated with organizing multivariate entities like species communities in a lower-dimensional space are inescapable.
+
+## PART E - ASSESSING COMMUNITY SIMILARITY USING PLANT COMMUNITY DATA ##
+
+Save the .csv file `Plant_communities_abundance.csv` onto your desktop from Quercus. Read in the data file using the `read.csv()` function. This file contains data on hypothetical plant community data. Here, each column represents a different community (A, B, C), and each row represents a different species. There are 50 species in the dataset, although not all have been detected in each community.
+
+```{r, read in data}
+plants <- read.csv("Plant_communities_abundance.csv", row = 1) 
+```
+
+We will need to convert the `plants` dataset into presence/absence data. Do this by assigning `plants` to a new object called `PA`, and converting values greater than 0 to 1. 
+
+```{r}
+PA <- plants
+PA[PA > 0] <- 1 # conversion 
+```
+
+You can check to see that the data were correctly converted to presence/absence data using the `head()` function. `head()` will display the first 6 rows of the dataset. Note the differences between `plants` and `PA`. 
+```{r, eval=FALSE}
+head(plants)
+head(PA)
+```
+
+Using the function `t()`, transpose the dataset so that community (A, B, C) are on the rows and species are on the columns. You can check what this looks like using `head()` as above. 
+```{r}
+plants <- t(plants)
+PA <- t(PA)
+```
+
+Next, use the R code to do pairwise comparisons of each community. This will be done by plotting the data in a scatterplot, where each point in the scatter plot represents a species. *You do not need to hand in these plots with your assignment, they are intended only to help you visualize the data.*
+
+First, we will isolate each community in `plants` and assign the community-specific data to a new "object". For example, here, we're telling R to assing the data for community A into an object called "A". 
+
+```{r, eval=FALSE}
+A <- as.numeric(plants[1, ]) # community A
+B <- as.numeric(plants[2, ]) # community B
+C <- as.numeric(plants[3, ]) # community C
+```
+
+Now, we will make scatterplots of the abundance data for communities A-C.
+
+```{r eval=FALSE, include=TRUE}
+par(mfrow=c(2,2))
+plot(A, B, pch = 16, xlab = "Community A", ylab = "Community B")
+plot(B, C, pch = 16, xlab = "Community B", ylab = "Community C")
+plot(A, C, pch = 16, xlab = "Community A", ylab = "Community C")
+```
+
+The following code will calculate the correlation coefficients (r) and the Bray-Curtis and Sorenson similarities for each pairwise comparison. Record these  values in the table below. Calculate the Bray-Curtis and Sørenson similarities between all pairs of communities. Write these values in the table below.
+
+<center>
+
+![](/Users/FOOKRI/Desktop/pairwise.png)
+
+</center>
+
+To calculate the correlation between communities, use the function `cor.test()`. Look for the value "cor" at the bottom of each output using the code:
+
+```{r eval=FALSE, include=TRUE}
+cor.test(A, B)
+cor.test(B, C)
+cor.test(A, C)
+```
+
+Bray-Curtis and Sorenson similarity are calculated using `vegdist()` as in Part C. Calculate Bray-Curtis from the `plants` dataset and Sorenson from the `PA` dataset. The outputs from each will give you a table of the similarity values for each community comparison. 
+
+```{r eval = FALSE}
+# Calculate Bray-Curtis similarity
+bray.curtis.plants <- 1 - vegdist(plants, method = "bray", na.rm = TRUE) 
+bray.curtis.plants       
+
+# Calculate Sorenson similarity
+sorenson.plants <- 1 - vegdist(PA, method = "bray", na.rm = TRUE)
+sorenson.plants   
+```
+
+**E1: Which two communities are most similar? Which two communities are most dissimilar? Does your answer change depending on what metric you use? Why/why not? Hand in the similarity indices you calculated (Table above) to support your answers. [3 pts]**
+
+**E2: What are the minimum and maximum possible values for the correlation coefficient r? [1 pt]**
+
+**E3: What are the minimum and maximum possible values for the Sørenson index of similarity (CS)? Briefly explain your reasoning. [2 pts]**
+
+**E4: What are the minimum and maximum possible values for the Bray-Curtis index (CN)? What must be true of two communities to get the maximum value of this index? What must be true of two communities to get the minimum value of this index? [3 pts]**
+
+Run the line of code below and notice that columns 20 to 50 are all made up of 0s (i.e. those species were not observed in each community). 
+```{r}
+plants
+```
+
+Below, we will remove those columns from `plants` and `PA`, leaving us with 19 sites. 
+```{r}
+abund_presentspp <- plants[, 1:19] 
+PA_presentspp <- PA[, 1:19]
+```
+
+As before, make scatterplots of the abundance data using the truncated dataset `abund_presentspp`. Extract the data for each community and assign it to a new object. 
+```{r eval=FALSE, include=TRUE}
+A_p = as.numeric(abund_presentspp[1, ]) # community A
+B_p = as.numeric(abund_presentspp[2, ]) # community B
+C_p = as.numeric(abund_presentspp[3, ]) # community C
+
+# scatter plots 
+par(mfrow=c(2,2))
+plot(A_p, B_p, pch=16, xlab="Community A", ylab="Community B")
+plot(B_p, C_p, pch=16, xlab="Community B", ylab="Community C")
+plot(A_p, C_p, pch=16, xlab="Community A", ylab="Community C")
+```
+
+Now use the code below to calculate the
+
+correlation coefficient:
+
+```{r eval=FALSE, include=TRUE}
+cor.test(A_p, B_p)
+cor.test(B_p, C_p)
+cor.test(A_p, C_p)
+```
+
+Bray-Curtis similarity:
+
+```{r eval=FALSE, include=TRUE}
+bray.curtis.plants2 <- 1 - vegdist(abund_presentspp, method = "bray")
+bray.curtis.plants2
+```
+
+and Sorenson similarity:
+
+```{r eval=FALSE, include=TRUE}
+sorenson.plants2 <- 1 - vegdist(PA_presentspp, method = "bray")
+sorenson.plants2
+```
+
+
+**E5: What happens to the various statistics (r, Bray-Curtis and Sørenson) when you do not consider species that are absent in all communities? Explain the effect of “joint absences” (species that are not observed in either of the two communities) on the different statistics (2 sentences, maximum). [2 pts]**
+
+**E6: Suggest one ecological and one sampling-related reason why a species could be absent from a sample. [3 pts]**
+
+**E7: Imagine you work for a conservation organization and you have to determine whether an exotic grass species poses a threat to native plant biodiversity at a protected grassland. You know from survey data collected before the exotic grass was introduced that the numbers of native species in sites within the field has not changed, but that the relative abundances of the native species are currently much lower than that of the exotic grass at all sites. In preparing your recommendations for the impact of the exotic grass on diversity, identify which of the following diversity calculations is/are most appropriate to present as evidence, and why: species richness, Sorenson index, or Bray-Curtis index. Draw the type of graph you would be showing in support of your conclusion (include the general trend you are seeing in these data). [5 pts]**
+
+
+```{r, tests for TAs, include=FALSE, eval=FALSE}
+cor.test(A_p, B_p)
+bray.curtis.plants2 <- 1-vegdist(abund_presentspp, method="bray") 
+bray.curtis.plants2
+sorenson.plants2 <- 1-vegdist(PA_presentspp, method="bray")
+sorenson.plants2
+
+```
