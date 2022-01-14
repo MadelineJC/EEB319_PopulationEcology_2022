@@ -23,7 +23,15 @@ This document, along with most of the labs in this course, and your assignment s
 
 **AN IMPORTANT NOTE:** When we write Markdown documents, we can export .Rmd files to PDF, Word, or HTML via a process called "knitting". You should be able to knit this file ("EEB319IntroR.Rmd") to HTML by clicking "knit" at the top left of this page. Once R has finished knitting this file to HTML, a preview window will pop up. You can view the knitted document in HTML by clicking "Open in Browser".  
 
-**ANOTHER IMPORTANT NOTE:** As previously mentioned, Markdown documents are neat because they can integrate chunks of text with chunks of code. To learn how we integrate a chunk of code, check of the example we use to set a working directory, below. Take a look at the "eval" argument. If we set **eval = TRUE**, R runs that chunk of code when knitting a document. If we set **eval = FALSE**, R will include the chunk in the knitted document, but won't run the code. In the "setwd()" example below, we've set eval = FALSE because we have different computers, and as such, the line we've written won't run on your computer. In upcoming labs, you'll notice that we've set eval = FALSE in some of our examples, and have included an empty code chunk, where we're set eval = TRUE, for you to write your own code below.  
+**ANOTHER IMPORTANT NOTE:** As previously mentioned, Markdown documents are neat because they can integrate chunks of text with chunks of code. To learn how we integrate a chunk of code, check of the example we use to set a working directory, below. Take a look at the "eval" argument. If we set **eval = TRUE**, R runs that chunk of code when knitting a document. If we set **eval = FALSE**, R will include the chunk in the knitted document, but won't run the code. When you submit assignments, you should make sure your code chunks are path independent (can be run on computers other than your own (you shouldn't have to worry about this if you've set your working directory correctly, which we'll go over in just a minute)), and set eval = TRUE, so that we can run your script quickly. You can check if your script runs smoothly from top to bottom by clicking the drop-down menu,"Run", in the top-right of the editor window (top-left window in default layout), and finding "Run All". In the "setwd()" example below, we've set eval = FALSE because we have different computers, and as such, the line we've written won't run on your computer. In upcoming labs, you'll notice that we've set eval = FALSE in some of our examples, and have included an empty code chunk, where we're set eval = TRUE, for you to write your own code below.  
+
+## Making Your Own Markdown Document  
+You can make your own Markdown document by clicking **File > New File > R Markdown**. After you've opened that blank Markdown document, you can start typing, using this document, and the following resources as a guide.  
+
+* [Markdown Example](https://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html)  
+* [Formatting Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)  
+
+Don't forget to fill in your name and student number at the top of the document, next to "author:"!  
 
 ## Let's Get Started w/ an Example!  
 ### Setting Your Working Directory:  
@@ -73,33 +81,35 @@ For today's lab, we'll be simulating a version of this model forward in time. An
 
 <p style="color: red;">**Question: Why did we exponentiate the second term in the first equation?**</p>  
 
-Now, to simulate this model forward in time, open the Lab 1 Excel sheet; come back here when you've finished simulating your data!  
+Now, to simulate this model forward in time, open the Lab 1 Excel sheet; come back here when you've finished simulating your data! **NOTE: Values for the parameter "r" can range between 0.1 and 2.0. Play around with a few different values to see how your simulation changes!**  
 
 **...**  
 
 Welcome back! The Excel sheet asked you to save your simulated data as a .csv. Let's bring those data into R!  
 
 ### Importing Data  
-Remember to make sure your data are stored in a .csv file, in your *working directory*. **You can import your data using read.csv():**  
+Remember to make sure your data are stored in a .csv file, in your *working directory* (above). **You can import your data using read.csv():**  
 
-Make sure to give your data set a name so you can call on it later; here we're calling our data set "InfecData". We use "**<-**" ("option" + "-")  as an assignment operator: it assigns a value to an object. Here, the value is our data set, and the object is "InfecData".  
-```{r, eval=TRUE}
-# NOTE 1: We can put a "#" at the beginning of a line of code if we don't want R to run that line. These lines are called "comments" and can be used to leave yourself notes explaining what your code does, why you chose to do something a certain way, etc.!
+Make sure to give your data set a name so you can call on it later; here we're calling our data set "InfecData", given that our data chronicle an infection. We use "**<-**" ("option" + "-")  as an assignment operator: it assigns a value to an object. Here, the value is our data set (.csv file), and the object is "InfecData".  
+```{r, eval=FALSE}
+# NOTE 1: Remember to change eval=TRUE!
 
-# NOTE 2: To run a line or chunk of code in your editor, use "command + Enter" on Mac, and "Ctrl + Enter" on Windows. If you're working in your console, you can just use "Enter".
+# NOTE 2: We can put a "#" at the beginning of a line of code if we don't want R to run that line. These lines are called "comments" and can be used to leave yourself notes explaining what your code does, why you chose to do something a certain way, etc.! It's good practice to provide clear comments so anybody (e.g. your TA) can pick up your code and understand what you're trying to do.
 
-InfecData <- read.csv("ModelSimulation.csv") # NOTE: that you need to include the entire pathname for your .csv within the quotation marks.
+# NOTE 3: To run a line or chunk of code in your editor, use "command + Enter" on Mac, and "Ctrl + Enter" on Windows. If you're working in your console (bottom-left window in default layout), you can just use "Enter".
+
+InfecData <- read.csv("PathNameHere.csv") # NOTE: that you need to include the entire pathname for your .csv within the quotation marks.
 ```
 
 In R, we can store different variables and objects in different ways. It's important to know the "class" of a variable or object because depending on its class, we'll have to treat the variable/object differently. We can see what kind of object our data are stored in using **class()**:  
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 class(InfecData)
 ```
 Our data are stored in a data.frame! A data frame is the most common way of storing data, and is the data structure we most often use when analysing or visualizing data. Technically, data frames are just lists of equal-length vectors, making them easy to manipulate and play around in.  
 
 ### Exploring Data  
 **Let's take a look at our data!** You can view the data set in its entirety by using **View()**:  
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 View(InfecData)
 ```
 
@@ -107,7 +117,7 @@ Do your data look similar to how they looked in Excel? You should have 501 rows 
 
 #### Using Functions  
 **You can explore these data in a few ways using functions!** In R, functions are commands you use to tell R to perform some task. The good news is, you've already used a few functions ("read.csv()", "class()", "View()"). To use functions generally, you type out the function's name and open brackets, "()". Inside your brackets, you'll include your arguments, which tell R where and how you're using a function. R has a lot of built-in functions, but we can find new functions in packages, and even write our own (but we'll talk more about that later).  
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 # If you're not sure what a function does or how to make it work, you can ask R by using "?":
 ?head # The help tab in your bottom-right window will tell you what "head()" does and how to use it!
 
@@ -121,9 +131,9 @@ head(InfecData, n = 3)
 # We can summarize our data using summary():
 summary(InfecData)
 
-# We can apply these same functions to a sebset of our data set using "$" to specify the column we're interested in:
+# We can apply these same functions to a subset of our data set using "$" to specify the column we're interested in:
 max(InfecData$Parasites) # Shows us the maximum abundance of parasites present in the host at a given time
-which(InfecData$Parasites == max(InfecData$Parasites)) # Reads: Where in the "Parasites" column of the the data set is the data point equal to (==) the maximum abundance of parasites (shows us when the parasite population peaks).
+which(InfecData$Parasites == max(InfecData$Parasites)) # Reads: Where in the "Parasites" column of the the data set (InfecData$Parasites) is the data point equal to (==) the maximum abundance of parasites (max(InfecData$Parasites)); shows us when the parasite population peaks.
 
 # To use a function from a package, we first have to install and load the package:
 # install.packages("cowsay") # Installing
@@ -135,7 +145,7 @@ say("Maddie's writing this in October, so I'm a ghost!", by = "ghost") # Adding 
 ```
   
 ### Plotting Data  
-**We can plot our data using plot().** We need to give plot() the data we want to use for the x-axis first, followed by the data we want to use for the y-axis. Here, we want "time" on the x-axis, and the abundaces of parasites and immunce cells on the y-axis. In the example below, the first line plots the population abundances of the parasite through time, and the second line adds the population abundances of the immune cells through time to the plot. The third line adds a legend!  
+**We can plot our data using plot().** We need to specify the data we want to use for the x-axis first, followed by the data we want to use for the y-axis. Here, we want "time" on the x-axis, and the abundances of parasites and immunce cells on the y-axis. In the example below, the first line plots the population abundances of the parasite through time, and the second line adds the population abundances of the immune cells through time to the plot. The third line adds a legend!  
 
 We can use a few additional arguments to make aesthetic changes to our plot:  
 
@@ -144,7 +154,7 @@ We can use a few additional arguments to make aesthetic changes to our plot:
 * **lwd** changes the line width  
 * **xlab** and **ylab** change the names of our axes  
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 plot(InfecData$time, InfecData$parasites, type = "l", col = "goldenrod1", lwd = 4, xlab="Time", ylab="Abundance")
 lines(InfecData$time, InfecData$immune_cells, col = "cornflowerblue", lwd = 4)
 legend("topleft", legend = c("Parasites", "Immune Cells"), col = c("goldenrod1", "cornflowerblue"), lty = 1, lwd  =4)
@@ -179,7 +189,7 @@ print(vec) # To show our resulting vector
 ```
 
 ### if... else Statements  
-if... else statements are conditional statements that are used to evaluate an input, and perform different tasks based on if the input passes some test. The general syntax for an if... else statement is as follows:  
+if... else statements are conditional statements that are used to evaluate an input, and perform different tasks based on whether the input passes some test or not (a kind of boolean (TRUE/FALSE) test). The general syntax for an if... else statement is as follows:  
 ```{r, eval=FALSE}
 if (test_expression){
   statement
@@ -238,7 +248,10 @@ Eqn_Func <- function(x){
 Eqn_Func(2)
 ```
 We can also put a function inside a for loop (and so on, and so on...)  
-**NOTE:** There's a lot going on in this example! It's okay if this is a bit confusing!
+
+Let's think about our Within-Host Disease Dynamics example from ealier... We simulated our model forward in time using Excel, but we can do the same thing in R. We can use a for loop to calculate future population abundances, and if... then statements to think about and account for population thresholds (when populations fall below zero, and when the parasite population reaches a lethal abundance). The output of this code chunk should resemble the plot you generated earlier!  
+
+**NOTE:** There's a lot going on in this example! It's okay if this is a bit confusing!  
 ```{r, eval=TRUE}
 # This function takes initial parasite and immune cell population abundances, and, according to a model we've written, determines the population abundances at the next time step
 Sim_Func <- function(Para_Last, Immune_Last){
@@ -247,11 +260,24 @@ Sim_Func <- function(Para_Last, Immune_Last){
   r = 0.3; k = 0.001; p = 1; o = 1000
   
   # A discrete model of within-host infectious disease dynamics
-  Para_Next = (1 + r*ts - (1-exp(-k*Immune_Last*ts)))*Para_Last
+  Para_Next = (1 + r*ts -k*Immune_Last*ts)*Para_Last
   Immune_Next = (1 + p*(Para_Last/(Para_Last + o))*ts)*Immune_Last
   
   Para_Last <- Para_Next
   Immune_Last <- Immune_Next
+  
+  # Add an if... then statement to prevent the population from going negative...
+  if (Para_Last < 0){
+    Para_Last <- 0; Immune_Next <- 0
+  } # If the parasite population abundance falls under 0, set abundance to 0
+  
+  if (Para_Last >= 10^9){
+    Immune_Next <- 0
+  } # If the parasite population abundance exceeds 10^9, the host dies; set immune cell population abundance to 0
+  
+  if (Immune_Last < 0){
+    Immune_Last <- 0
+  } # If the immune cell population abundance falls under 0, set abundance to 0
   
   return(c(Para_Last, Immune_Last))
 }
@@ -282,12 +308,6 @@ lines(df$Time, df$Immune_Cells, col = "cornflowerblue", lwd = 4)
 legend("topleft", legend=c("Parasites", "Immune Cells"),
        col=c("goldenrod1", "cornflowerblue"), lty = 1, lwd = 4)
 ```
-
-## Making Your Own Markdown Document  
-For this course, you'll be submitting your lab assignments as Markdown documents. You can make your own Markdown document by clicking **File > New File > R Markdown**. After you've opened that blank Markdown document, you can start typing, using this document, and the following resources as a guide.  
-
-* [Markdown Example](https://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html)  
-* [Formatting Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)  
 
 ## Learning Resources:  
 * [Introduction to R by DataCamp](https://app.datacamp.com/learn/courses/free-introduction-to-r?utm_source=adwords_ppc&utm_campaignid=897699256&utm_adgroupid=47591961031&utm_device=c&utm_keyword=r%20course&utm_matchtype=p&utm_network=g&utm_adpostion=&utm_creative=262625967799&utm_targetid=kwd-301266522201&utm_loc_interest_ms=&utm_loc_physical_ms=9000970&gclid=CjwKCAjwoP6LBhBlEiwAvCcthH6H9DeWkdFYviWhblTYEdQKQpI6_JqaBcv5Q-M8RBnmAFetA1xSZRoCh9kQAvD_BwE)  
