@@ -549,6 +549,7 @@ legend(&quot;topleft&quot;, legend = c(&quot;Parasites&quot;, &quot;Immune Cells
 <p style="color: red;">
 <strong>Question: How might we interpret these data? Do these data seem to represent a chronic infection? An infection that can be cleared? An infection that ends with the death of the host? Explain.</strong>
 </p>
+<p><strong>A P.S. on plotting:</strong> If you like data visualization, check out a package called <strong>ggplot2</strong>! ggplot2 is part of what’s called the “t<strong>idyverse&quot;</strong>. The tidyverse is a collection of R packages designed for data science (data manipulation, exploration, and visualization), that share underlying design philosophy, grammar, and data structures. Lots of people have lots of opinions about the merits of using base R (what we’re using here, at the moment) vs. the tidyverse, but which is better usually comes down to personal preference. ggplot2 can be a great tool if you’re looking to visualize your data in unique ways, or if you’re looking to make your plots interactive (package:”plotly&quot;). Check out some examples <a href="https://www.r-graph-gallery.com/ggplot2-package.html">here</a>. If you’re interested, you can read more about ggplot2 <a href="https://ggplot2.tidyverse.org">here</a>, and more about the tidyverse more generally, <a href="https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/">here</a>.</p>
 </div>
 </div>
 </div>
@@ -631,8 +632,8 @@ print(vec3)</code></pre>
 # The function needs us to give a value of x. If we say x = 2, then the function calculates y according to the statment we wrote, y = 2x + 4
 Eqn_Func(2)</code></pre>
 <pre><code>## [1] 8</code></pre>
-<p>We can also put a function inside a for loop (and so on, and so on…) .</p>
-<p>Let’s think about our Within-Host Disease Dynamics example from ealier… We simulated our model forward in time using Excel, but we can do the same thing in R. by writing function, and implementing that function within a for loop The output of this code chunk should resemble the plot you generated earlier!</p>
+<p>We can also put a function inside a for loop (and so on, and so on…).</p>
+<p>Let’s think about our Within-Host Disease Dynamics example from ealier… We simulated our model forward in time using Excel, but we can do the same thing in R by writing function, and implementing that function within a for loop. The output of this code chunk should resemble the plot you generated earlier!</p>
 <p><strong>NOTE:</strong> There’s a lot going on in this example! It’s okay if this is a bit confusing!</p>
 <pre class="r"><code># This function takes initial parasite and immune cell population abundances, and, according to the model we've been using, determines the population abundances at the next time step
 Sim_Func &lt;- function(Para_Last, Immune_Last){
