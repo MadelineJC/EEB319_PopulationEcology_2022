@@ -15,17 +15,18 @@ R is a computer programming language and environment for statistical computing a
 [R Project](https://www.r-project.org/about.html)   
 [Big Book of R](https://www.bigbookofr.com/index.html)  
 
-## Downloading R and R Studio (DO THIS BEFORE LAB 1 STARTS, PLEASE!)    
+## Downloading R and R Studio  
+***DO THIS BEFORE LAB 1 STARTS, PLEASE!***      
 Download and install R onto your computer [here](https://utstat.toronto.edu/cran/). After downloading/installing R, you'll want to download/install [RStudio](https://www.rstudio.com/products/rstudio/), which is just R with a graphical user interface (GUI). Try opening R Studio to make sure it works. You should see four windows: the top-left window is your editor, where you can write, run, and save scripts. The bottom-left window is your console/terminal, where you can run code without saving it in a script. The top-right window is your environment, where you can find any objects you've defined. The bottom-right window is where you can navigate between files in your working directory, view plots you've generated, or read package documentation. Don't panic! We'll try to go through all of this in detail during lab.  
 
 ## R Markdown
-This document, along with most of the labs in this course, and your assignment submissions, will be written using R Markdown. R Markdown is a file format for making dynamic documents (documents that can be continually edited and updated) with R. An R Markdown document is written in markdown (an easy-to-write plain text format) and contains chunks of embedded R code. You can open and edit R Markdown files (.Rmd) in R Studio. To learn more about R Markdown, go [here](https://rmarkdown.rstudio.com/articles_intro.html).   
+This document, along with most of the labs in this course, and your assignment submissions, will be written using R Markdown. R Markdown is a file format for making dynamic documents (documents that can be continually edited and updated) with R. R Markdown documents are written in markdown (an easy-to-write plain text format, similar to HTML and LaTex (pronounced "law-tech")) and contain chunks of embedded R code. More generally, writing in markdown allows you to create documents that smoothly integrate chunks of text, mathametical equations, hyperlinks, and chunks of code. You can open and edit R Markdown files (.Rmd) in R Studio. To learn more about R Markdown, go [here](https://rmarkdown.rstudio.com/articles_intro.html), or [here](https://cran.r-project.org/web/packages/stationery/vignettes/Rmarkdown.pdf).    
 
-**AN IMPORTANT NOTE:** When we write Markdown documents, we can export .Rmd files to PDF, Word, or HTML via a process called "knitting". You should be able to knit this file ("EEB319IntroR.Rmd") to HTML by clicking "knit" at the top left of this page. Once R has finished knitting this file to HTML, a preview window will pop up. You can view the knitted document in HTML by clicking "Open in Browser".  
+**AN IMPORTANT NOTE:** When we write Markdown documents, we can export .Rmd files to PDF, Word, or HTML via a process called "knitting". You should be able to knit this file ("EEB319IntroR.Rmd") to HTML by clicking "knit" at the top left of this page. Once R has finished knitting this file to HTML, a preview window will pop up. You can view the knitted document in HTML by clicking "Open in Browser". Opening this document in a browser will also show you how the formatting of a .Rmd file maps onto the knitted version of the document.  
 
 **ANOTHER IMPORTANT NOTE:** As previously mentioned, Markdown documents are neat because they can integrate chunks of text with chunks of code. To learn how we integrate a chunk of code, check of the example we use to set a working directory, below. Take a look at the "eval" argument. If we set **eval = TRUE**, R runs that chunk of code when knitting a document. If we set **eval = FALSE**, R will include the chunk in the knitted document, but won't run the code. When you submit assignments, you should make sure your code chunks are path independent (can be run on computers other than your own (you shouldn't have to worry about this if you've set your working directory correctly, which we'll go over in just a minute)), and set eval = TRUE, so that we can run your script quickly. You can check if your script runs smoothly from top to bottom by clicking the drop-down menu,"Run", in the top-right of the editor window (top-left window in default layout), and finding "Run All". In the "setwd()" example below, we've set eval = FALSE because we have different computers, and as such, the line we've written won't run on your computer. In upcoming labs, you'll notice that we've set eval = FALSE in some of our examples, and have included an empty code chunk, where we're set eval = TRUE, for you to write your own code below.  
 
-## Making Your Own Markdown Document  
+### Making Your Own Markdown Document  
 You can make your own Markdown document by clicking **File > New File > R Markdown**. After you've opened that blank Markdown document, you can start typing, using this document, and the following resources as a guide.  
 
 * [Markdown Example](https://www.math.mcgill.ca/yyang/regression/RMarkdown/example.html)  
@@ -33,7 +34,7 @@ You can make your own Markdown document by clicking **File > New File > R Markdo
 
 Don't forget to fill in your name and student number at the top of the document, next to "author:"!  
 
-## Let's Get Started w/ an Example!  
+## Let's Get Started!  
 ### Setting Your Working Directory:  
 We use working directories to tell R where it should look for and store files on our computers. We can start by creating a folder called "R_Projects", and a subfolder called "EEB319" on our desktops. If you right-click on that subfolder, you should be able to see its pathname (e.g. /Users/mjarviscross/Desktop/R_Projects/EEB319). As a side-note, your working directory can be thought of similarly to how you'd think about any folder. For example, let's download the course files from Quercus into our "EEB319" folders, and create subfolders for different labs.  
 
@@ -47,7 +48,7 @@ setwd("/Users/mjarviscross/Desktop/R_Projects/EEB319")
 This is the easier option, but not the best...  
 
 #### Start a Project:  
-If you set your working directory using **setwd()**, you'll be able to save all your files in the same place, but won't be able to save any of your objects or outputs. If you set your working directory by [creating an R Project](https://r4ds.had.co.nz/workflow-projects.html), you'll be able to save all your files in the same place *and* save all your objects and outputs. This will save you a lot of time in the long-run, and make your work reproducible.  
+If you set your working directory using **setwd()**, you'll be able to save all your files in the same place, but won't be able to save any of the objects or outputs you create. If you set your working directory by [creating an R Project](https://r4ds.had.co.nz/workflow-projects.html), you'll be able to save all your files in the same place *and* save all your objects and outputs. This will save you a lot of time in the long-run, and make your work more reproducible.  
 
 Go to the top-right corner of your R Studio window and click "Project: (None)". Then, click the first option in the drop-down menu, "New Project". A new window will pop-up, and give you three options: "New Directory", "Existing Directory", and "Version Control". Click "Existing Directory", and use the browse button to navigate to your "EEB319" folder. Finally, click "Create Project" in the bottom-right of the pop-up window, and you're ready to go! As a side-note, you should be able to see all the files and subfolders in your working directory in the "Files" tab of your "Files, Plots, Packages, Help, and Viewer" window of R Studio (bottom-right window in default layout).  
 
@@ -87,7 +88,7 @@ Now, to simulate this model forward in time, open the Lab 1 Excel sheet; come ba
 
 Welcome back! The Excel sheet asked you to save your simulated data as a .csv. Let's bring those data into R!  
 
-### Importing Data  
+#### Importing Data  
 Remember to make sure your data are stored in a .csv file, in your *working directory* (above). **You can import your data using read.csv():**  
 
 Make sure to give your data set a name so you can call on it later; here we're calling our data set "InfecData", given that our data chronicle an infection. We use "**<-**" ("option" + "-")  as an assignment operator: it assigns a value to an object. Here, the value is our data set (.csv file), and the object is "InfecData".  
@@ -107,16 +108,16 @@ class(InfecData)
 ```
 Our data are stored in a data.frame! A data frame is the most common way of storing data, and is the data structure we most often use when analysing or visualizing data. Technically, data frames are just lists of equal-length vectors, making them easy to manipulate and play around in.  
 
-### Exploring Data  
-**Let's take a look at our data!** You can view the data set in its entirety by using **View()**:  
+#### Exploring Data Using Functions    
+In R, functions are commands you use to tell R to perform some task. The good news is, you've already used a couple functions ("read.csv()", "class()"). To use functions, you type out the function's name and open brackets, "()". Inside your brackets, you'll include your arguments, which tell R where and how you're using a function. R has a lot of built-in functions, but we can find new functions in packages, and even write our own (but we'll talk more about that later).  
+
+**Let's take a look at our data!** You can view your data set in its entirety by using the function, **View()**:  
 ```{r, eval=FALSE}
 View(InfecData)
 ```
 
-Do your data look similar to how they looked in Excel? You should have 501 rows and 3 columns (time, parasite abundance, and host immune cell abundace). Next, let's explore our data!  
+Do your data look similar to how they looked in Excel? You should have 501 rows and 3 columns (time, parasite abundance, and host immune cell abundace). Next, let's use some more functions to explore our data!  
 
-#### Using Functions  
-**You can explore these data in a few ways using functions!** In R, functions are commands you use to tell R to perform some task. The good news is, you've already used a few functions ("read.csv()", "class()", "View()"). To use functions generally, you type out the function's name and open brackets, "()". Inside your brackets, you'll include your arguments, which tell R where and how you're using a function. R has a lot of built-in functions, but we can find new functions in packages, and even write our own (but we'll talk more about that later).  
 ```{r, eval=FALSE}
 # If you're not sure what a function does or how to make it work, you can ask R by using "?":
 ?head # The help tab in your bottom-right window will tell you what "head()" does and how to use it!
@@ -144,8 +145,8 @@ say("This is one of R's many user-generated useless-but-fun packages!") # Using 
 say("Maddie's writing this in October, so I'm a ghost!", by = "ghost") # Adding an argument to change how we're using the function
 ```
   
-### Plotting Data  
-**We can plot our data using plot().** We need to specify the data we want to use for the x-axis first, followed by the data we want to use for the y-axis. Here, we want "time" on the x-axis, and the abundances of parasites and immunce cells on the y-axis. In the example below, the first line plots the population abundances of the parasite through time, and the second line adds the population abundances of the immune cells through time to the plot. The third line adds a legend!  
+#### Plotting Data  
+**We can plot our data using the function, plot().** We need to specify the data we want to use for the x-axis first, followed by the data we want to use for the y-axis. Here, we want "time" on the x-axis, and the abundances of parasites and immunce cells on the y-axis. In the example below, the first line plots the population abundances of the parasite through time, and the second line adds the population abundances of the immune cells through time to the plot. The third line adds a legend!  
 
 We can use a few additional arguments to make aesthetic changes to our plot:  
 
@@ -231,7 +232,10 @@ for (i in vec2){
 }
 print(vec3)
 ```
-You can also nest for loops inside of other for loops and so on. BUT! A few layers of for loops can really slow down your computation. When that happens, we're better off writing a function. In R, functions are self-contained modules of code that accomplish a specific task. To use a function, you give its required arguments, the function completes its task, and gives you back an output. The general syntax for a function is as follows:  
+You can also nest for loops inside of other for loops and so on. BUT! A few layers of for loops can really slow down your computation. When that happens, we're better off writing a function.  
+
+### Writing Functions  
+In R, functions are self-contained modules of code that accomplish a specific task. To use a function, you give its required arguments, the function completes its task, and gives you back an output. The general syntax for a function is as follows:  
 ```{r, eval=FALSE}
 function_name <- function(argument){
   statement
@@ -247,37 +251,24 @@ Eqn_Func <- function(x){
 # The function needs us to give a value of x. If we say x = 2, then the function calculates y according to the statment we wrote, y = 2x + 4
 Eqn_Func(2)
 ```
-We can also put a function inside a for loop (and so on, and so on...)  
+We can also put a function inside a for loop (and so on, and so on...).   
 
-Let's think about our Within-Host Disease Dynamics example from ealier... We simulated our model forward in time using Excel, but we can do the same thing in R. We can use a for loop to calculate future population abundances, and if... then statements to think about and account for population thresholds (when populations fall below zero, and when the parasite population reaches a lethal abundance). The output of this code chunk should resemble the plot you generated earlier!  
+Let's think about our Within-Host Disease Dynamics example from ealier... We simulated our model forward in time using Excel, but we can do the same thing in R by writing function, and implementing that function within a for loop. The output of this code chunk should resemble the plot you generated earlier!  
 
 **NOTE:** There's a lot going on in this example! It's okay if this is a bit confusing!  
 ```{r, eval=TRUE}
-# This function takes initial parasite and immune cell population abundances, and, according to a model we've written, determines the population abundances at the next time step
+# This function takes initial parasite and immune cell population abundances, and, according to the model we've been using, determines the population abundances at the next time step
 Sim_Func <- function(Para_Last, Immune_Last){
   # Parameter values
   ts = 0.1
   r = 0.3; k = 0.001; p = 1; o = 1000
   
   # A discrete model of within-host infectious disease dynamics
-  Para_Next = (1 + r*ts -k*Immune_Last*ts)*Para_Last
+  Para_Next = (1 + r*ts - (1-exp(-k*Immune_Last*ts)))*Para_Last
   Immune_Next = (1 + p*(Para_Last/(Para_Last + o))*ts)*Immune_Last
   
   Para_Last <- Para_Next
   Immune_Last <- Immune_Next
-  
-  # Add an if... then statement to prevent the population from going negative...
-  if (Para_Last < 0){
-    Para_Last <- 0; Immune_Next <- 0
-  } # If the parasite population abundance falls under 0, set abundance to 0
-  
-  if (Para_Last >= 10^9){
-    Immune_Next <- 0
-  } # If the parasite population abundance exceeds 10^9, the host dies; set immune cell population abundance to 0
-  
-  if (Immune_Last < 0){
-    Immune_Last <- 0
-  } # If the immune cell population abundance falls under 0, set abundance to 0
   
   return(c(Para_Last, Immune_Last))
 }
@@ -325,8 +316,3 @@ legend("topleft", legend=c("Parasites", "Immune Cells"),
 * Does your code run? 10%  
 * Plotting: 25%  
 * Interpretation questions: 25%  
-
-   
-
-
-
