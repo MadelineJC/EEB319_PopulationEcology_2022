@@ -1,0 +1,90 @@
+---
+title: "SpareCode"
+author: "M. Jarvis-Cross"
+date: "12/01/2022"
+output: html_document
+---
+
+#### Spare code ====================
+But most data don't look so neat... In real systems, stochastic processes (random variation in birth and death rates, environmental conditions, etc.) make data messy. To show you what we mean, here's a demographically stochastic model of within-host disease dynamics.  
+``` {r, eval = TRUE, echo = FALSE}
+DiscreteModel <- function(P_Last, I_Last){
+  ts = 0.1 # Step size
+  
+  r = 1.5; k = 0.001; p = 1; o = 1000 # Parameter values
+  
+  # Stochastic birth and death processes
+  P_B = rpois(1, r*ts) 
+  P_D = rbinom(1, P_Last, k*I_Last*ts) 
+  I_B = rpois(1, p*(P_Last/(P_Last + o))*ts) 
+  
+  P_Next = P_Last + P_B - P_D # Calculating next abundance
+  I_Next = I_Last + I_B
+  
+  P_Last <- P_Next
+  I_Last <- I_Next
+  
+  return(c(P_Last, I_Last))
+}
+
+P_Last <- 1; I_Last <- 1 # Initial abundances
+ts = 0.1; TT <- 500/ts  
+df <- data.frame("1", "1") 
+colnames(df) <- c("P", "I") 
+# Loop to run the simulation
+for (i in 1:(TT)){
+  Output = DiscreteModel(P_Last, I_Last)
+  P_Last = Output[1]
+  I_Last = Output[2]
+  Addition <- c(P_Last, I_Last)
+  df <- rbind(df, Addition)
+}
+# Data wrangling to plot
+time <- seq(0, TT/10, ts)
+df <- data.frame(cbind(time, df))
+# Plotting
+plot(df$time, df$P, type = "l", col = "goldenrod1", lwd = 2, ylim=c(0,250), xlab="Time", ylab="Abundance")
+lines(df$time, df$I, col = "cornflowerblue", lwd = 2)
+legend("topleft", legend=c("Parasites", "Immune Cells"),
+       col=c("goldenrod1", "cornflowerblue"), lty = 1, lwd = 2)
+```
+
+If you open this file in R Studio, you can run this chunk of code a few times to see how the model responds to stochasticity (randomness)!  
+``` {r, eval = TRUE, echo = FALSE}
+# install.packages("scales") # Installing
+library(scales) # Loading
+SimNum <- seq(1,100,1)
+TT <- 500/ts
+DisStoch <- data.frame(time=seq(0, TT/10, ts))
+for (i in 1:length(SimNum)){
+  df <- data.frame()
+  P_Last <- 1; I_Last <- 1
+  for (j in 1:TT){
+    Output = DiscreteModel(P_Last, I_Last)
+    P_Last = Output[1]
+    I_Last = Output[2]
+    Addition <- c(P_Last, I_Last)
+    df <- rbind(df, Addition)
+    colnames(df) <- c(paste0("P_", SimNum[i]),
+                      paste0("I_", SimNum[i]))
+  }
+  inits <- data.frame("1", "1")
+  colnames(inits) <- c(paste0("P_", SimNum[i]),
+                       paste0("I_", SimNum[i]))
+  df <- data.frame(rbind(inits, df))
+  DisStoch <- data.frame(cbind(DisStoch, df))
+}
+Ps <- seq(2,(ncol(DisStoch)-1),2)
+Is <- seq(3,(ncol(DisStoch)),2)
+
+plot(DisStoch[,1], DisStoch[,2], type="l", col=alpha("goldenrod1", 0.5), xlab="Time", ylab="Abundance", ylim = c(0,250))
+lines(DisStoch[,1], DisStoch[,3], type="l", col=alpha("cornflowerblue", 0.2))
+for (i in Ps){
+  lines(DisStoch[,1], DisStoch[,i], type="l", col=alpha("goldenrod1", 0.5))
+}
+for (i in Is){
+  lines(DisStoch[,1], DisStoch[,i], type="l", col=alpha("cornflowerblue", 0.2))
+}
+legend("topright", legend=c("Parasites", "Immune Cells"),
+       col=c("goldenrod1", "cornflowerblue"), lty = 1, lwd = 4)
+```

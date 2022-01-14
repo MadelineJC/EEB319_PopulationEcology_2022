@@ -1,0 +1,451 @@
+---
+title: 'EEB319, Lab 4: Interspecific Competition Among Protozoans'
+author: "H. Cyr and M. Jarvis-Cross"
+output: html_document
+---
+
+For this lab, you'll need to install the following two packages: **"deSolve"** and **"phaseR"**. You can do that here:
+```{r}
+# Install deSolve and phaseR here:
+
+```
+
+## Background  
+In the 1930s, the Russian ecologist G.F. Gause performed a set of very influential experiments to test the competition models developed a few years earlier by Vito Volterra (Gause 1932, 1934, 1935).  These models, now called the Lotka-Volterra competition models, are based on logistic population growth equations.  As you have seen in lecture, these logistic growth equations describe how the density of a species ($N_1$) changes through time when it is grown alone:  
+
+\begin{align}
+    \text{(1) }\ \frac{dN_1}{dt} = r_1 N_1 \frac{K_1 - N_1}{K_1}\\
+\end{align}  
+
+The presence of a competing species will reduce the carrying capacity of species 1 ($K_1$) in this particular environment.  To describe this, equation 1 can be modified to include the reduction in $K_1$ induced by species 2:  
+
+\begin{align}
+    \text{(2) }\ \frac{dN_1}{dt} = r_1 N_1 \frac{(K_1 - α_{12}N_2) - N_1}{K_1}\\
+\end{align}
+
+Where $α_{12}$ is the competition coefficient that measures the per capita competitive effect on species 1 of species 2 (by convention, the subscripts are listed in this order), $N_2$ is the density of species 2 and, therefore, $α_{12}$ $N_2$ is the number of individuals of species 1 to which species 2 is ecologically equivalent.  
+
+In the same way, the effect of species 1 on the growth of a population of species 2 can be modeled as:  
+
+\begin{align}
+    \text{(3) }\ \frac{dN_2}{dt} = r_2 N_2 \frac{(K_2 - α_{21}N_1) - N_2}{K_2}\\
+\end{align}  
+
+Equations 2 and 3 can be used to predict the outcome of interspecific competition between species 1 and 2.  The easiest way to visualize the outcome of interspecific competition between 2 species is to use a state space graph, where N1 is found along the X-axis and $N_2$ is found along the Y-axis (see Fig. 1; we will cover this in details in class).  This special type of graph shows all possible combinations of population densities for the 2 species we are interested in, and is commonly used to follow the population dynamics of 2 interacting species.  For e.g., simultaneous changes in $N_1$ and $N_2$ through an experiment would be represented by a line starting at the point of initial densities (i.e., $N_1$ and $N_2$ at the beginning of the experiment) and going through all combinations of $N_1$ and $N_2$ observed during the experiment to the final point representing $N_1$ and $N_2$ at the end of the experiment.  To visualize the outcome of interspecific competition, we plot the zero population growth isoclines predicted by the Lotka-Volterra competition models for each species (i.e. the line where population growth rate is zero, or $\frac{dN}{dt} = 0$) onto a state space graph.  For species 1, the zero population growth isocline is obtained by setting $\frac{dN_1}{dt}$ to zero in equation 2,  
+
+\begin{align}
+    \text{(4) }\ 0 = r_1 N_1 \frac{(K_1 - α_{12}N_2) - N_1}{K_1}\\
+\end{align}  
+
+Which can be simplified and rearranged to:  
+
+\begin{align}
+    \text{(5) }\ N_1 = K_1 - α_{12}N_2\\
+\end{align}  
+
+This isocline is a straight line that intersects the Y-axis (i.e., $N_1=0$) at $\frac{K_1}{α_{12}}$ (you obtain this by solving equation 5 for $N_2$), and that intersects the X-axis (i.e., $N_2=0$) at $K_1$ (see Fig. 1, left panel).  When the density of species 1 ($N_1$) is higher than this isocline (i.e., to the right of the isocline), species 1 is under severe competition and its abundance decreases towards the isocline; when $N_1$ is lower than the isocline (i.e., to its left), competition is weak and $N_1$ will increase towards the isocline. The changes in $N_1$ towards the isocline are shown by arrows in the left panel of Fig. 1.  
+
+![**From Begon et al. (1990), *Ecology***](Lab4_Images/Lab4_Fig1.png "SSD")  
+
+In the same way, the zero growth isocline for the population of species 2 can be drawn as a straight line that intersects the X-axis at $\frac{K_2}{α_{21}}$ and that intersects the Y-axis at $K_2$.  When $N_2$ is higher than this isocline (i.e., above the isocline), it decreases towards it; when $N_2$ is lower than the isocline (i.e., below), it increases towards it (see arrows in the right panel of Fig. 1).  
+
+There are four possible ways in which the zero population growth isoclines of species 1 and 2 can be positioned relative to each other (Fig. 2), and their relative positions determine the outcome of interspecific competition.  When the isoclines do not cross each other, the species with the highest isocline competitively excludes the species with the lowest isocline (Fig. 2a, b).  When the isoclines cross each other, they may show an unstable equilibrium where both species go extinct (Fig. 2c) or a stable equilibrium where both species coexist (Fig. 2d).  
+
+According to these models, if we know the population parameters of each species (r and K) and if we have a measure of the strength of the interaction between the species ($α_{12}$, $α_{21}$) we should be able to predict the outcome of competition. Will two species coexist or not?  
+
+### Estimating Population Parameters and Competition Coefficients  
+The logistic growth model suggests that a population grows exponentially at low densities (e.g., when a culture is first set up) and that intraspecific competition progressively slows its rate of growth until it reaches the maximum density that can be supported by the available resources (its carrying capacity).  For a given environment, populations are described using 2 parameters: their intrinsic growth rate (r) and their carrying capacity (K).  The strength of interspecific competition is measured by comparing the population parameters of a species grown in a monoculture to those of the same species grown in a mixed culture.  
+
+![***Figure 3:** Logistic growth curve.*](Lab4_Images/Lab4_Fig3.png "LGC")
+
+#### Intrinsic Growth Rate:  
+The intrinsic growth rate (r) is estimated from the exponential portion of the population growth curve (i.e., the first portion of the curve, Fig. 3 top), which is described by the following equation:  
+
+\begin{align}
+    \text{(6) }\ N_t = N_0 e^{rt}\\
+\end{align}  
+
+If we take the natural logarithm of equation 6, we obtain:  
+
+\begin{align}
+    \text{(7) }\ ln N_t = ln N_0 + rt\\
+\end{align} 
+
+Where r is simply the slope of a linear relationship between $lnN_t$ and t (see Fig. 3 bottom). If t is measured in days, the units of r will be day$^{-1}$.
+
+#### Population Doubling Time:  
+To express r in more easily understood terms, we may calculate the doubling time of the population (i.e. how long it takes the population to double in density).  To calculate the doubling time, we can reorganize equation 6 to:  
+
+\begin{align}
+    \text{(8) }\ \frac{N_t}{N_0} = e^{rt}\\
+\end{align}
+
+We know r (calculated above) and we want to know how long it takes for the population to double its density (i.e., $\frac{N_t}{N_0} = 2$), so  
+
+\begin{align}
+    &\text{(9) }\ 2 = e^{rt}\\
+    &\text{(10) }\ ln 2 = rt\\
+    &\text{(11) }\ t = \frac{0.6931}{r}\\
+\end{align}  
+
+If r is expressed as day$^{-1}$, t will be in days.  
+
+#### Carrying Capacity:  
+The easiest way to estimate the carrying capacity of a population (K) is to visually estimate the point at which the growth curve reaches an asymptote (Fig. 3 top).  An estimate of carrying capacity is then the average of the densities after that point.  The units of K are the same as those used to express population density (e.g., number m$^{-2}$, number mL$^{-1}$).  
+
+#### Competition Coefficients:  
+A competition coefficient measures the effect of one species on the growth of another.  These coefficients are measured by comparing the potential for growth of a species in monoculture (i.e., grown alone) to its realized growth, under exactly the same conditions (i.e. same food availability, temperature, etc), with a second species (i.e. in mixed culture).  
+
+The competition coefficients are calculated by rearranging equations 2 and 3 to:  
+
+\begin{align}
+    \text{(12) }\ α_{12} = (K_1 - N_1 - \frac{\frac{dN_1}{dt}K_2}{r_1 N_1}) N_2\\
+\end{align}  
+
+and,
+
+\begin{align}
+    \text{(13) }\ α_{21} = (K_2 - N_2 - \frac{\frac{dN_2}{dt}K_1}{r_2 N_2}) N_1\\
+\end{align}  
+
+Where $N_1$ and $N_2$ are population densities of species 1 and 2 at a given time during the experiment.  Therefore, to estimate the competition coefficients from data using these equations, it is necessary to select a particular time in the time series of experimental data. There is a practical issue with using equations 12 and 13 to estimate competition coefficients; these equations contain derivatives (i.e. $\frac{dN_1}{dt}$ and $\frac{dN_2}{dt}$).  It is not immediately clear how one should estimate these derivatives from data.  We will use the following simple approach.  Calculate the slope of the graph of population density versus time around the time that you select.  By ‘around the time that you select’, I mean the period of time defined by one or two observations before, and one or two observations after, the selected time.  
+
+If stable equilibria are reached in the monocultures and in the mixed cultures, the competition coefficients become much easier to calculate.  We can then rearrange equation 5 (and its equivalent for species 2) and set $\frac{dN}{dt} = 0$ so that:  
+
+\begin{align}
+    \text{(14) }\ α_{12} = \frac{K_1 - N_1}{N_2}\\
+\end{align}  
+
+and,  
+
+\begin{align}
+    \text{(15) }\ α_{21} = \frac{K_2 - N_2}{N_1}\\
+\end{align}  
+
+Where $K_1$ is the carrying capacity of species 1 in monoculture, $K_2$ is the carrying capacity of species 2 in monoculture, $N_1$ is population density of species 1 at equilibrium (i.e., its carrying capacity) when it is grown in a mixed culture with species 2, and $N_2$ population density of species 2 at equilibrium when it is grown in a mixed culture with species 1.  
+
+One assumption of these models is that the competition coefficients are constant through the experiments. Are they?  
+
+### Phase Plane Diagrams  
+If we calculate the parameters above for two populations, we can plot a phase plane diagram. A phase plane diagram is a graphical representation of the trajectories of a dynamical system. Here, our dynamical system is a system of ODEs (ordinary differential equations; $\frac{dN_1}{dt}$ and $\frac{dN_2}{dt}$) that represent the abundances of two interacting species over time.  
+
+A flow field shows the flow of an ODE system. You can think of a flow field as showing the dynamical trajectory of a system.  
+
+Nullclines are sets of points in the phase plane such that $\frac{dN_1}{dt}$ and $\frac{dN_2}{dt} = 0$. The steady state of the system is represented where the x- and y-nullclines overlap. You can read more about nullclines in competition models [here](http://mcb.berkeley.edu/courses/mcb137/exercises/Nullclines.pdf) and [here](https://www.ucl.ac.uk/~ucess29/page2/MATH3506Chapters/Math3506Chapter3.pdf).  
+
+Here's an example of a phase plane diagram:  
+```{r, eval=TRUE, echo = FALSE}
+library(deSolve); library(phaseR)
+LVcomp<-function(t, y, p){
+  N1 <- y[1]; N2 <- y[2]
+  r1 <- p[1]; r2 <- p[2]; a11 <- p[3];  a12 <- p[4]; a21 <- p[5]; a22 <- p[6]
+  dN1 <- r1*N1*(1-a11*N1-a12*N2) 
+  dN2 <- r2*N2*(1-a21*N1-a22*N2)
+  return(list(c(dN1,dN2)))
+}
+N10 <- 1; N20 <- 2
+inits <- c(N10,N20)
+stepsize <- 0.1
+TT <- seq(1, 500, stepsize)
+r1 <- 1; r2 <- 1; a11 <- 0.01; a12 <- 0.015; a21 <- 0.015; a22 <- 0.01
+parms1 <- c(r1,r2,a11,a12,a21,a22)
+results <- lsoda(inits, TT, LVcomp, parms1)
+thin <- seq(from=1,to=dim(results)[[1]],by=(1/stepsize))
+results1 <- results[thin,] 
+results1 <- results1[is.na(results1[,2])==F,]
+par(mfrow=c(1,1)); par(mar=c(5,5,4,3))
+plot(results1[,3] ~ results1[,2], type = "l", xlim = c(0,1/a11+20), ylim = c(0,1/a22+20), ylab = "Species 2", xlab = "Species 1", cex.lab = 2, main = "Lotka-Volterra Competition Model, EXAMPLE", cex.main = 1.5, lwd = 2, frame.plot = FALSE, axes = FALSE)
+axis(1, col = "white")
+axis(2, col = "white")
+abline(h = 0, v = 0, lty = 1, col = "black")
+flowfield <- flowField(LVcomp, xlim = c(0,1/a11+20), ylim = c(0,1/a22+20), parameters = parms1, points = 15)
+nullclines <- nullclines(LVcomp, xlim = c(0,1/a11+20), ylim = c(0,1/a22+20), parameters = parms1, points = 500, col = c("blue","red"), add.legend = FALSE)
+legend("topright", legend = c("Species 1 Nullcline", "Species 2 Nullcline", "Population Trajectory"), lty = 1, col = c("blue", "red", "black"))
+```
+
+## Lab Goals
+In this lab, we will essentially be repeating some of the pioneering experiments of G.F. Gause, with a wider range of protozoan species. We will study a simple system where 2 protozoan species compete for a single resource (bacteria, their food).  Since protozoans grow quickly, they allow us to follow their population dynamics and interactions over a relatively short period of time.  
+
+This exercise is divided in two parts:  
+
+(1) You will be growing two protozoan species in the lab, in monocultures and in a mixed culture, to determine the population parameters of each species and to measure the interspecific competition among them.  
+
+(2) You will use the Lotka-Volterra competition model with the population parameters derived from your cultures to predict the outcome of competition in your system.  By comparing the zero population growth isoclines of both species in state space (described above), you will determine whether, theoretically, these 2 species should be able to coexist or not, and you will then compare these predictions to the results from your own experiment.  
+
+You will run these experiments with a subset of the following species of ciliated protozoans (Fig. 4) NOTE: we may or may not be able to get good cultures of all species:  
+
+(1) Paramecium caudatum. Large cylindrical or cigar-shaped ciliate with rounded anterior and pointed posterior. You can see a ridge through the middle. (200-300 μm long).  
+(2) Paramecium aurelia.  Ovoid or elongate in shape with both ends rounded. Posterior end more rounded than P. caudatum. (120-180 μm long).  
+(3) Paramecium bursaria. Green ciliate due to the presence of algal symbionts (Chlorella) in its cytoplasm. (80-150 μm long, 50-60 μm wide).  
+(4) Paramecium multimicronucleatum. Large cylindrical ciliate with many small nuclei. (200-300 μm long).  
+(5) Blepharisma sp. Pink pear-shaped ciliate (~300 μm long).  
+
+![***Figure 4:** Ciliates available for the competition experiment.*](Lab4_Images/Lab4_Fig4.png "Ciliates")
+
+## Procedure  
+This lab will take place over four weeks.  In the first week, you will be learning the laboratory techniques required to conduct the experiment.  In the second week, you will actually set up the experiment.  For the final two weeks there will be no formal lab period, but one person from each team will be required to come in daily to count protozoans; your schedule in these final two weeks will be up to you.  
+
+**SAFETY: You will be working with live microorganisms. NO food or drink in the lab. Make sure you wash your hands before leaving the lab.**  
+
+### Week 1: Introductory Lab (Lab Room)  
+Please form working groups of 4 or 5 students.  
+
+This week, you will spend time learning various laboratory techniques that are required to carry out our competition experiment. These techniques are explained below.  
+
+#### Identifying Protozoans: 
+Examine the four species of protozoans under the microscope by putting a few drops of media on a depression slide.  The ciliates will be moving around; look at their movements and try to follow them around.  To observe them in detail and to count them, you will need to slow them down with a drop of methyl cellulose (add more as needed).  You may also try to stain (and kill) them with one small drop of Lugol's solution; beware, too much Lugol's solution will make everything turn dark brown. **NOTE: Lugol's solution will stain clothes permanently and will stain your skin for several days, so use with caution and with gloves!. Learn how to identify reliably each species** [***Hint:** compare size, shape, color*].  
+
+#### Measuring Lengths Under the Microscope:
+In this lab, you will be measuring the size of different protozoans and you will need to know the diameter of your field of view in order to calculate protozoan density (explained in the next section). To do this, you will need an ocular micrometer and a stage micrometer. An ocular micrometer is an uncalibrated reference line with tick marks that fits into one of the ocular pieces of your microscope (look through your microscope to see it). A stage micrometer is a very precise microscopic ruler etched in a slide, which is used to calibrate the ocular micrometer.  
+
+First, calibrate the ocular micrometer by putting the stage micrometer on the stage of your microscope. Look through your microscope, align the ocular and stage micrometers by turning the ocular piece and measure the distances between the tick marks of the ocular micrometer using the stage micrometer. Then you may replace the stage micrometer with a slide of protozoans, and use the calibrated ocular micrometer to measure the lengths of protozoan cells on your slide. Note that the ocular micrometer calibration is specific to each magnification and to each microscope. That means you will need to recalibrate your ocular micrometer if you change magnification or if you change microscope. Make sure you know how to determine the magnification you are working at.  
+
+Second, use the stage micrometer to measure the diameter of the field of view (i.e. the circle you see in the microscope); this will be important for measuring protozoan densities.  Again, this measurement is specific to the magnification and microscope you used.  
+
+#### Measuring Protozoan Densities:  
+Density is the number of protozoan cells per unit volume of media.  Therefore, to estimate density with a sample, we need to count both the number of protozoans in the sample and measure the volume of the sample.  You need to count at least 30 individuals of a given species in a **subsample of known volume**, and you should make sure you are using subsamples that are representative of your cultures (how will you do that?).
+
+The higher the density of protozoans, the smaller the volume of culture you will need to count them in.  So, you will be counting protozoans using a Sedwick-Rafter cell (Fig. 5) when protozoan densities are low at the beginning of the experiment (e.g. initial counts) or  with an hemocytometer cell (Fig. 6) when protozoan densities are high (e.g. after a few days' growth).  When they are set up properly, these cells contain a precisely known volume of sample. **These counting chambers are high-precision pieces of equipment, and therefore quite expensive. Please be nice to them!**  
+
+**Sedwick-Rafter cell**, to count protozoans at low densities; beginning of the experiment:  
+
+* The Sedwick-Rafter cell is 50 mm long X 20 mm wide X 1 mm deep for a volume of exactly 1 mL (or 1 cm$^3$).  Fig. 5 shows you how to set it up.  
+* You should add enough sample to the chamber so the space under the cover slip is full (no bubble) and there is water bulging from the open side of the chamber.  
+* Add **one small drop** of Lugol's solution to kill the protozoans so you can count them.  
+* Slide the cover slip to close the chamber.  
+* When set up properly, there should be no bubbles in the chamber.  
+
+![***Figure 5:** Method of filling a Sedwick-Rafter cell.*](Lab4_Images/Lab4_Fig5.png "SRC")
+
+You may count protozoans in the whole Sedwick-Rafter cell, in a long transect (full length of the Sedwick-Rafter cell), in a short transect (going across the width of the Sedwick-Rafter cell) or in a field of view.  You may, of course, use more than one transect or field of view if you need to (make sure you count at least 30 individuals in a known volume of sample).  In all cases, you will need to measure the diameter of your field of view with a stage micrometer (see the section above on Measuring lengths under the microscope).  This will allow you to calculate the volume of sample you counted protozoans in.  For a long transect that is 50 mm X diameter of field of view X 1 mm deep; for a short transect, that is 20 mm X diameter of field of view X 1 mm; for a field of view, that is surface area of the field of view X 1 mm deep.  This volume is expressed in mm$^3$, so you need to transform it to mL (remember: 1 cm$^3$ = 1 mL, so 1 mm$^3$ = 0.001 mL) to express your counts as # protozoans · mL$^{-1}$.  As long as you keep the same microscope and the same magnification, these volumes should be the same so you only need to measure them once. Discard your sample when you are finished counting.  
+
+**Hemocytometer cell**, to count protozoans at high densities, e.g. end of the experiment:  
+After a week or so, the density of protozoans may be too high for you to use a Sedwick-Rafter cell. I suggest that you then start using the hemocytometer cell (Fig. 6) for your counts.  Actually, make sure you don't use the Sedwick-Rafter cell too many times or you will deplete your cultures (remember, you will use at least 1 mL solution per sample, which you then discard).  To set up the hemocytometer cell, put the cover glass on the center of the chamber (see Fig. 6C) and use a Pasteur pipette to dispense a few drops of the well-mixed sample into the grove or on the slanted edge of the hemocytometer (Fig. 6B), just on the edge of the cover glass.  The sample will penetrate under the cover glass on its own.  
+
+Count all protozoans in a pre-determined area (see Fig. 6D).  For e.g., count protozoans of species A in the 16 large squares of a 1mm X 1mm area (shaded red in Fig. 6D), and switch to smaller areas as the density of the protozoans increases.  Count the number of protozoans quickly to avoid counting the same individual twice (the protozoans will be moving). If you need to slow down the organisms, you may put a drop of methyl cellulose or Lugol's solution on the edge of the cover slip and allow some time for diffusion (don’t add too much; you do not want to dilute your subsample).  Count protozoans in other corners of the counting area (to avoid counting the same individuals twice) until you have counted at least 30 individuals.  Do not just stop at 30 – remember: you need to know the exact volume you counted the protozoans in, so you need to finish counting the protozoans in your last square.  Record your protozoan count and the surface area (i.e. number of squares, transformed to mm$^2$) over which you counted these protozoans. The hemocytometer cell is 0.1 mm deep, and the counting grid (see Fig. 6D) allows you to determine the surface area you have counted protozoans in.  Knowing depth and surface area, you can calculate the volume of your subsample (remember: 1 cm$^3$ = 1 mL, so 1 mm$^3$ = 0.001 mL), and protozoan density (in # cells · mL$^{-1}$).  
+
+![***Figure 6:** Images of the hemocytometer: (A) an overhead view, (B) loading a sample with a pipet, (C)a profile view showing where the cover glass is positioned and (D) a schematic of the grid lines in the counting chamber as seen through a microscope.  Sizes of various regions of the grid are given as examples in the table (D).  Images from www.wikipedia.com.*](Lab4_Images/Lab4_Fig6.png "Hemo")  
+
+### Week 2: Initial Setup (Lab Room)  
+**NOTE:** You will start the lab (9:10 AM sharp) with a short quiz on the techniques you learnt in Week 1 (worth 10% of your mark for the lab). The purpose of this quiz is to make sure you have acquired the skills to properly set up the experiment, so make sure you understand everything before you come to lab!  
+
+Please re-form your working groups from last week.  Choose two species to work with.  
+
+Your first task will be to measure the density of protozoans in the stock cultures provided using the techniques for measuring densities that you learned last week. **Please avoid cross contamination among protozoan cultures!** We have colour-coded each culture to help in differentiating them. Please use the designated pipette for each culture.  Compare your estimates with others in the class to get an average density that everybody will use.  
+
+You will set up 3 treatments with 4 replicates each, for a total of 12 cultures.  Two of the treatments are monocultures of each species (i.e. species are grown alone).  The third treatment is a culture where both ciliate species are inoculated together.  It is important that all your initial cultures are inoculated with the **same total number of individuals**.  This means x individuals of species A or B in your monocultures, and x/2 individuals of species A + x/2 individuals of species B (i.e., half the number of species A and of species B) in your competition treatment.  Aim for inocula of a total of 10 individuals per mL (i.e., a total of 400 individuals in your 40mL cultures).  
+
+* Label 12 culture tubes (A1, A2, A3, A4, B1-4, A+B1-4, or some code you will recognize) and set them up into a rack.  Label your rack so you (and your TAs) can easily recognize them.  
+
+* Label 3 Erlenmeyer flasks, one for each treatment (A, B, A+B).  Prepare one large batch of each treatment (2 monocultures and 1 mixed culture) that you will then each divide into 4 replicate culture tubes.  This should minimize the initial variability among replicates.  
+
+* Calculate the volume of protozoan stock culture you need to inoculate your cultures with a total of approximately 400 individuals per culture tube, and multiply by 4 (for 4 replicates).  **Note: This volume will be different for each ciliate species.**  Stir the stock cultures very well and dispense the required volume into the appropriate Erlenmeyer flask. Use a graduated cylinder or a pipet since the markings on flasks are very imprecise. Remember, monocultures have approximately 400 individuals of the chosen species per culture tube and mixed cultures have half (i.e. 200) the number of individuals of each species per culture tube. Record these dilutions and the initial densities of each species.  
+
+* Bring up the volume in each flask to 160mL by adding culture medium.  ***Note:** You will need to add different volumes of medium to each treatment since different volumes of stock culture were used to obtain a total of 400 individuals in all treatments.*
+
+![ ](Lab4_Images/Lab4_Table1.png "Table")
+
+* Dispense 40 mL of each inocculum to each of 4 replicate culture tubes.  
+
+* Cover your culture tubes (do not put the caps on tight - these protozoans need oxygen!) and leave them on the lab bench to incubate.  ***Note:** Those working with P. bursaria have to decide whether you want to grow these cultures in the light or in the dark.*  
+
+### Weeks 3 and 4: Daily Counts (RW216)  
+In order to follow population dynamics of these quickly reproducing protozoans, you will need to measure their population density **daily** for 2 weeks, week-ends excluded (the building is open 7AM to 9PM on week days, doors get locked at 5PM on Fridays).  RW216 can be opened with a keypad combination, which you will be given in class.  **Please make sure that you lock up before leaving.**  All the necessary equipment will be left on the bench. Follow the counting procedure outlined above. If you are well organized, you should be able to count all 12 cultures in ~1.5 hours **(if it takes you significantly longer than this, something is wrong and you should talk to your TA or instructor)**. Timewise, the time each of you spends counting should be roughly equivalent to two lab periods (i.e. 6 hours). There are 4 or 5 students per group, so you can easily alternate days. Please organize your time fairly and efficiently, and make sure you do not lose your count data!  
+
+To compensate for the time you will be spending counting protozoans during weeks 3 & 4, **THERE WILL BE NO FORMAL LABS ON MARCH 13 & 20**.  Note that the protozoan data are due on Friday March 21, the day of your last counts.  
+
+**SAFETY: Remember, you are working with live microorganisms. NO food or drink in the lab. Make sure you wash your hands before leaving the lab.**  
+
+You can collect your data in a sheet like that shown in Fig. 7; you should have one data sheet per monoculture/mixed culture. 
+
+![***Figure 7:** Data collection sheet for Monoculture A. This sheet tracks the cells and area counted per replicate, per day of the experiment, per monoculture/mixed culture group.*](Lab4_Images/Lab4_Fig7.png "DataCollection1")  
+  
+#### Data Wrangling  
+Once you've collected all your data, you can download your data as a .csv, and import it into R using a function we've used before:  
+```{r, eval=FALSE}
+dataset_a <- read.csv("monoculture_a.csv")
+```
+
+```{r, eval=TRUE}
+# IMPORT YOUR DATA HERE
+```
+
+Next, you can calculate volumes and densities in R, and add them to your data set:  
+```{r, eval=FALSE}
+# To calculate volumes:
+volumes <- dataset_a$area_counted*0.1/1000
+
+# Doing the same thing for densities:
+densities <- dataset_a$cells_counted/volumes
+
+# Concatinating our existing data set and our calculated values ("cbind" binds columns together; you can also bind rows together using "rbind"):
+dataset_a <- cbind(dataset_a, volumes, densities)
+```
+
+```{r, eval=TRUE}
+# NOW IT'S YOUR TURN
+```
+
+Next, you can find the mean density per day of experiment by grouping your density calculations by day, and averaging:  
+```{r, eval=FALSE}
+# Vector to hold mean densities: 
+mean_dens <- c()
+# Group your data by day of experiment, and find mean density:
+mean_dens <- aggregate(dataset_a$densities, list(dataset_a$day_of_exp), FUN = mean)
+# Rename columns of resulting vector:
+colnames(mean_dens) <- c("day_of_exp", "mean_density")
+```
+
+```{r, eval=TRUE}
+# NOW IT'S YOUR TURN
+```
+
+Next, we can find calculate variance by day, and standard error in density by day:
+```{r, eval=FALSE}
+variance <- aggregate(dataset_a$densities, list(dataset_a$day_of_exp), FUN = var)
+
+# We can use these variancse to calculate standard error in density by day:
+strd_err <- sqrt(variance)/4 # Where 4 is the number of replicates/day
+```
+
+```{r, eval=TRUE}
+# NOW IT'S YOUR TURN
+```
+
+Now, combine your summary statistics (mean density and standard error in density by day) into a dataframe, using **"data.frame()"** and **"cbind()"**. If you're unsure how to use either of these functions, you can check previously used .Rmd documents, or type **"?data.frame"** or **"?cbind"** into the console.  
+```{r, eval=TRUE}
+# Combine your summary stats here:
+
+```
+
+**REMEMBER:** We need to perform these calculations on each monoculture, and on the mixed culture. You'll have to make some changes to the code chunks above in order to perform these calculations on the mized culture.  
+
+If you want to use your data and calculations to make some plots, you can do so here:  
+
+**NOTE:** For tips on how to add error bars, check [here](https://www.benjaminbell.co.uk/2019/04/how-to-add-error-bars-in-r.html), and for more general information on plotting in base R, check:  
+
+* [R Base Graphs](http://www.sthda.com/english/wiki/r-base-graphs)  
+* [R Base Graphics: An Idiot's Guide](https://rstudio-pubs-static.s3.amazonaws.com/7953_4e3efd5b9415444ca065b1167862c349.html)  
+* [The Base Plotting System in R](https://rstudio-pubs-static.s3.amazonaws.com/84527_6b8334fd3d9348579681b24d156e7e9d.html)  
+* [Base Plotting in R from Towards Data Science](https://towardsdatascience.com/base-plotting-in-r-eb365da06b22)  
+
+```{r, eval=TRUE}
+# Your plots here!
+
+```
+
+#### Plotting a Logistic Growth Model
+Remember when we learned about logistic growth? As a reminder, the logistic growth model suggests that a population grows exponentially at low densities, and that intraspecific competition progressively slows its rate of growth until it reaches the maximum density that can be supported by the available resources (its carrying capacity).  
+
+We can plot a time series showing population abundances through time pretty easily! You'll need time series data (population size through time), and values for K and r. You can check previously used .Rmd documents (or Google "plotting in R) to find details on using the **"plot()"** function in R.    
+```{r, eval=FALSE}
+plot(x,y)
+abline(h = K) # To add a horizontal line denoting the population's carrying capacity
+abline(a = y_inter, b = slope) # To add a line denoting the intrinsic growth rate of the population, r, where a = the y-intercept, and b = slope (in this case, r)
+```
+
+#### Using Population Parameters to Plot a Phase Plane Diagram  
+Here's an example of how to plot a phase plane diagram:  
+```{r, eval=TRUE}
+library(deSolve); library(phaseR)
+# Write the Lotka-Volterra model as a function:
+LVcomp<-function(t, y, p){
+  N1 <- y[1]; N2 <- y[2] # Population abundances
+  r1 <- p[1]; r2 <- p[2]; a11 <- p[3];  a12 <- p[4]; a21 <- p[5]; a22 <- p[6] # Intrinsice growth rates and competition co-efficients of each population
+  
+  dN1 <- r1*N1*(1-a11*N1-a12*N2) # System of ODE's describing population aubndances over time 
+  dN2 <- r2*N2*(1-a21*N1-a22*N2)
+  return(list(c(dN1,dN2))) # The 'return' function specifies the output that the function (model) returns
+}
+# Assign initial population abundances:
+N10 <- 1; N20 <- 2
+inits <- c(N10,N20)
+
+# Assign how often you want a solution, and how many time steps you want to run the simulation for:
+stepsize <- 0.1
+TT <- seq(1, 500, stepsize)
+
+# Set parameter values, and put those parameter values in a vector to feed to the ODE solver, "lsoda"
+r1 <- 1; r2 <- 1; a11 <- 0.01; a12 <- 0.015; a21 <- 0.015; a22 <- 0.01
+parms1 <- c(r1,r2,a11,a12,a21,a22)
+
+# Run the ODE solver, "lsoda", in the deSolve package, and save the results in a vector:
+results <- lsoda(inits, TT, LVcomp, parms1)  
+# Data cleaning (you don't need to worry about this):
+thin <- seq(from=1,to=dim(results)[[1]],by=(1/stepsize))
+results1 <- results[thin,] 
+results1 <- results1[is.na(results1[,2])==F,]
+par(mfrow=c(1,1)); par(mar=c(5,5,4,3))
+
+# Plot the simulation results:
+plot(results1[,3] ~ results1[,2], type = "l", xlim = c(0,1/a11+20), ylim = c(0,1/a22+20), ylab = "Species 2", xlab = "Species 1", cex.lab = 2, main = "Lotka-Volterra Competition Model, EXAMPLE", cex.main = 1.5, lwd = 2, frame.plot = FALSE, axes = FALSE)
+axis(1, col = "white")
+axis(2, col = "white")
+abline(h = 0, v = 0, lty = 1, col = "black")
+
+# Overlay the flow field and nullclines:
+flowfield <- flowField(LVcomp, xlim = c(0,1/a11+20), ylim = c(0,1/a22+20), parameters = parms1, points = 15)
+nullclines <- nullclines(LVcomp, xlim = c(0,1/a11+20), ylim = c(0,1/a22+20), parameters = parms1, points = 500, col = c("blue","red"), add.legend = FALSE)
+
+# Add a legend:
+legend("topright", legend = c("Species 1 Nullcline", "Species 2 Nullcline", "Population Trajectory"), lty = 1, col = c("blue", "red", "black"))
+```
+
+Now, try using your results to plot a phase plane diagram!  
+**REMEMBER:** You should play with your initial population abundances to see if initial abundances affect your outcomes, and input your own parameter values for intrinsic growth rates and competition coefficients. You should also change the axis labels and main title of your plot to represent your own work!  
+```{r, eval=TRUE}
+# YOUR WORK HERE!
+```
+
+## Oral Presentation
+Please make sure to divide the work fairly and evenly; everyone should participate in data collection, data analyses *and* in preparing the presentation. I suggest you meet early in the project to discuss who will be doing what. You’ll need to set deadlines and plan several group meetings to make sure the material comes together nicely (and on time). Make sure you divide the work evenly, and that you discuss as a group differences of opinions between team members. Your work will be judged as a group, but each student is responsible for understanding all steps of the experimental set up, the analyses and the conclusions.  
+
+**When:** Thursday April 3 during your lab period. Make sure you are there at 9AM or 1PM sharp(!), so you can load your presentation before we start. Hand in a hard copy of your slides to your TA.  
+
+**Composition and marking scheme for Oral Presentation:**  Your presentation should have a TOTAL of 9 slides (see below) and last 10 min.  
+
+* Title slide, with list of team members (1 slide)  
+* Introduction & Question: 10% (2 slides)  
+  (1) Explain briefly what competition is and why this experiment was done.  
+  (2) List the hypotheses being tested (in general terms).  
+  (3) Describe briefly the relevant biology of the protozoan species you used in this experiment.  
+  (4) List the expected outcomes (based on the species you chose).  
+* Methods: 5% (1 slide)  
+  * Brief but thorough.  
+* Results: 25% (2 slides)  
+  * Should include the following information in graphs and tables, along with any other pertinent data:  
+    (1) Graphs showing the population dynamics of each species in monoculture and in mixed culture (1 graph per species; 2 curves per graph: monoculture, mixed culture).  
+        * You should have 4 replicate measurements of population density each day in each culture, so make sure there are error bars associated with the mean densities reported for each sampling day.  
+    (2) Population parameters (r, K) calculated from the data.    
+    (3) Doubling time of each population.    
+    (4) Coefficients of competition.    
+    (5) State space graph and predicted outcome of competition experiment.    
+* Discussion: 20% (1 slide)  
+  * Should include the following topics, but feel free to add other points as you see fit:  
+    (1) Compare the predicted outcome of competition (using a space state graph) to your observations.  Discuss any discrepancies.  Were all assumptions of the Lotka-Volterra competition model met in your experiment? How much confidence do you have in the parameters you estimated? Why?  
+    (2) Compare the population parameters you measured and the outcome of your competition experiment to those of similar published studies.  
+* Conclusions: 5% (1 slide)  
+* Contribution of each student to the project:  (1 slide at the end – show this slide, but no need to go through it during presentation)  
+  * List briefly the contribution of each student to the project (i.e. who did what).  
+All members of a team will receive the same grade for their lab report, but we expect everybody to contribute to all stages of the project (data collection, analysis, writing) and a fair division of labor between team members.  
+* Slide layout: 10%  
+* Presentation: 10%  
+* Question period: 5%  
+* Lab quiz (done in 1st lab): 10%  
+
+### Instructions  
+Oral presentations are the standard mode of communication at scientific meetings to convey the results from recently completed research projects. Since the main goal of these presentations is to transmit information, they need to be easy to understand (i.e., present material in a logical order, and don’t talk too fast!).  
+
+Your presentation should have all the parts of a lab report (Introduction, Methods, Results, Discussion, Conclusion - see above for details; References are presented on the proper slide and you can use a small font for those). In oral presentations, the information is most easily conveyed with diagrams and figures, and I recommend you format your text in point form instead of full paragraphs.  
+
+Resist the temptation to put too much material on your slides – you will just confuse everyone. You need to decide (as a team) what information is really essential. Please focus on two aspects of your results: 1) describe the observed dynamics of your populations and how you derived the parameters of the Lotka-Volterra model from these data (mention uncertainties and assumptions), 2) explain how your expectations based on the Lotka-Volterra model compare with the actual outcome of your experiment.  
+
+You are only allowed 7 slides to present your project (plus one Title slide & one Contribution slide; see above). This is short, so you should decide (as a team) what is the most important information you want to focus on. The main goal of these presentations is to communicate scientific information, so you do not want to simply rush through your explanations. You need to say everything that is important, but don’t try to say too much! Your presentation should last no more than 7 minutes, so you have at least 3 min. for questions. 
+
+## References  
+* Gause, G.F. 1932. Experimental studies on the struggle for existence. I. Mixed population of two species of yeast.  J. Exp. Biol. 9: 389-402.  
+* Gause, G.F. 1934. The struggle for existence. Macmillan, NY. (available on line at http://www.ggause.com/Contgau.html)  
+* Gause, G.F. 1935. Experimental demonstration of Volterra's periodic oscillation in the numbers of animals. J. Exp. Biol. 12: 44-48.  
+
+
+
