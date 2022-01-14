@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/837637/4b5334c6a71d4fd2bf01a379cc3eba93
+bundleId: https://api.rpubs.com/api/v1/document/837637/4b5334c6a71d4fd2bf01a379cc3eba93
+url: http://rpubs.com/MJarvisCross/837637
+when: 1637365142.32447
