@@ -82,60 +82,83 @@ For today's lab, we'll be simulating a version of this model forward in time. An
 
 <p style="color: red;">**Question: Why did we exponentiate the second term in the first equation?**</p>  
 
-Now, to simulate this model forward in time, open the Lab 1 Excel sheet; come back here when you've finished simulating your data! **NOTE: Values for the parameter "r" can range between 0.1 and 2.0. Play around with a few different values to see how your simulation changes!**  
+Now, to simulate this model forward in time, open the Lab 1 Excel sheet; come back here when you've finished simulating your data!  
+
+<*NOTE: As referenced in Table 1, values for the parameter "r" can range between 0.1 and 2.0. Play around with a few different values to see how your time series changes!**<    
 
 **...**  
 
-Welcome back! The Excel sheet asked you to save your simulated data as a .csv. Let's bring those data into R!  
+Welcome back! The Excel workbook asked you to save your simulations as .csv files. Let's bring those data into R!  
 
 #### Importing Data  
-Remember to make sure your data are stored in a .csv file, in your *working directory* (above). **You can import your data using read.csv():**  
+Remember to make sure your .csv files are stored in your *working directory* (above). **You can import your data using read.csv():**  
 
-Make sure to give your data set a name so you can call on it later; here we're calling our data set "InfecData", given that our data chronicle an infection. We use "**<-**" ("option" + "-")  as an assignment operator: it assigns a value to an object. Here, the value is our data set (.csv file), and the object is "InfecData".  
-```{r, eval=FALSE}
-# NOTE 1: Remember to change eval=TRUE!
+Make sure to name your data sets so you can call on them later. We've included an example wherein we name our first data set "InfectData_r03" to specify (1) that our data chronicle an infection, and (2) that in this hypothetical simulation, we assigned "r" a value of 0.3. We use "**<-**" ("option" + "-")  as an assignment operator, which assigns a value to an object. Here, the value is our data set (.csv file), and the object is "InfecData"_r03.  
+```{r, eval=TRUE}
+# NOTE 1: We can put a "#" at the beginning of a line of code if we don't want R to run that line. These lines are called "comments" and can be used to leave yourself notes explaining what your code does, why you chose to do something a certain way, etc.! It's good practice to provide clear comments so anybody (e.g. your TA) can pick up your code and understand what you're trying to do.
 
-# NOTE 2: We can put a "#" at the beginning of a line of code if we don't want R to run that line. These lines are called "comments" and can be used to leave yourself notes explaining what your code does, why you chose to do something a certain way, etc.! It's good practice to provide clear comments so anybody (e.g. your TA) can pick up your code and understand what you're trying to do.
+# NOTE 2: To run a line or chunk of code in your editor, use "command + Enter" on Mac, and "Ctrl + Enter" on Windows. If you're working in your console (bottom-left window in default layout), you can just use "Enter".
 
-# NOTE 3: To run a line or chunk of code in your editor, use "command + Enter" on Mac, and "Ctrl + Enter" on Windows. If you're working in your console (bottom-left window in default layout), you can just use "Enter".
+InfecData_r03 <- read.csv("ModelSimulation_1.csv") # NOTE: that you need to include the entire pathname for your .csv within the quotation marks.
+```
 
-InfecData <- read.csv("PathNameHere.csv") # NOTE: that you need to include the entire pathname for your .csv within the quotation marks.
+Now, you try! Remember, you should be importing three .csv files!  
+```{r, eval=TRUE}
+# YOUR WORK HERE! 
 ```
 
 In R, we can store different variables and objects in different ways. It's important to know the "class" of a variable or object because depending on its class, we'll have to treat the variable/object differently. We can see what kind of object our data are stored in using **class()**:  
-```{r, eval=FALSE}
-class(InfecData)
+```{r, eval=TRUE}
+class(InfecData_r03)
 ```
+
+Now, you try!  
+```{r, eval=TRUE}
+# YOUR WORK HERE! 
+```
+
 Our data are stored in a data.frame! A data frame is the most common way of storing data, and is the data structure we most often use when analysing or visualizing data. Technically, data frames are just lists of equal-length vectors, making them easy to manipulate and play around in.  
 
 #### Exploring Data Using Functions    
-In R, functions are commands you use to tell R to perform some task. The good news is, you've already used a couple functions ("read.csv()", "class()"). To use functions, you type out the function's name and open brackets, "()". Inside your brackets, you'll include your arguments, which tell R where and how you're using a function. R has a lot of built-in functions, but we can find new functions in packages, and even write our own (but we'll talk more about that later).  
+In R, functions are commands you use to tell R to perform some task. The good news is, you've already used a couple functions ("read.csv()", "class()"). To use functions, you type out the function's name and open brackets, "()". Inside your brackets, you'll include your arguments, which tell R where and how you're using a function.    
 
-**Let's take a look at our data!** You can view your data set in its entirety by using the function, **View()**:  
+**Let's take a look at our data!** You can view your data sets in their entirety by using the function, **View()**:  
 ```{r, eval=FALSE}
-View(InfecData)
+View(InfecData_r03)
 ```
 
-Do your data look similar to how they looked in Excel? You should have 501 rows and 3 columns (time, parasite abundance, and host immune cell abundace). Next, let's use some more functions to explore our data!  
+Now, you try!  
+```{r, eval=TRUE}
+# YOUR WORK HERE!
+```
 
-```{r, eval=FALSE}
+Do your data sets look as they should? You should have 501 rows and 3 columns (time, parasite abundance, and host immune cell abundace) per simulation. Next, let's use some more functions to explore our data!  
+```{r, eval=TRUE}
 # If you're not sure what a function does or how to make it work, you can ask R by using "?":
 ?head # The help tab in your bottom-right window will tell you what "head()" does and how to use it!
 
 # We can see the first/last few lines of our data set using head() and tail():
-head(InfecData)
-tail(InfecData)
+head(InfecData_r03)
+tail(InfecData_r03)
 
 # And we can specify how many lines we'd like to see by adding an argument for "n":
-head(InfecData, n = 3)
+head(InfecData_r03, n = 3)
 
 # We can summarize our data using summary():
-summary(InfecData)
+summary(InfecData_r03)
 
 # We can apply these same functions to a subset of our data set using "$" to specify the column we're interested in:
-max(InfecData$Parasites) # Shows us the maximum abundance of parasites present in the host at a given time
-which(InfecData$Parasites == max(InfecData$Parasites)) # Reads: Where in the "Parasites" column of the the data set (InfecData$Parasites) is the data point equal to (==) the maximum abundance of parasites (max(InfecData$Parasites)); shows us when the parasite population peaks.
+max(InfecData_r03$parasites) # Shows us the maximum abundance of parasites present in the host at a given time
+which(InfecData_r03$parasites == max(InfecData_r03$parasites)) # Reads: Where in the "Parasites" column of the the data set (InfecData_r03$Parasites) is the data point equal to (==) the maximum abundance of parasites (max(InfecData_r03$Parasites)); shows us when the parasite population peaks.
+```
 
+Now, you try!  
+```{r, eval=TRUE}
+# YOUR WORK HERE!
+```
+
+The functions used above are often termed ["base functions"](https://www.statmethods.net/management/functions.html) because they come pre-installed for our use. To access more expansive and specific sets of functions, we can install what's called a "package" A package is a set of pre-written functions designed to help us accomplish a task, e.g. data cleaning, solving mathematical systems, etc.  
+```{r, eval=TRUE}
 # To use a function from a package, we first have to install and load the package:
 # install.packages("cowsay") # Installing
 library(cowsay) # Loading
@@ -155,18 +178,20 @@ We can use a few additional arguments to make aesthetic changes to our plot:
 * **lwd** changes the line width  
 * **xlab** and **ylab** change the names of our axes  
 
-```{r, eval=FALSE}
-plot(InfecData$time, InfecData$parasites, type = "l", col = "goldenrod1", lwd = 4, xlab="Time", ylab="Abundance")
-lines(InfecData$time, InfecData$immune_cells, col = "cornflowerblue", lwd = 4)
+```{r, eval=TRUE}
+plot(InfecData_r03$time, InfecData_r03$parasites, type = "l", col = "goldenrod1", lwd = 4, xlab="Time", ylab="Abundance", main = "Within-Host Population Dynamics, r = 0.3")
+lines(InfecData_r03$time, InfecData_r03$immune_cells, col = "cornflowerblue", lwd = 4)
 legend("topleft", legend = c("Parasites", "Immune Cells"), col = c("goldenrod1", "cornflowerblue"), lty = 1, lwd  =4)
 ```
 
-Now, try to make a plot like the one above, with some aesthetic changes! You can use [STHDA](http://www.sthda.com/english/wiki/line-plots-r-base-graphs) and [Towards Data Science](https://towardsdatascience.com/base-plotting-in-r-eb365da06b22) as references!  
+Now, try to **plot all three of your simulations** like the example above, with some aesthetic changes! You can use [STHDA](http://www.sthda.com/english/wiki/line-plots-r-base-graphs) and [Towards Data Science](https://towardsdatascience.com/base-plotting-in-r-eb365da06b22) as references!  
 ```{r, eval=TRUE}
 # YOUR WORK HERE!
 ```
 
 <p style="color: red;">**Question: How might we interpret these data? Do these data seem to represent a chronic infection? An infection that can be cleared? An infection that ends with the death of the host? Explain.**</p>  
+
+<p style="color: red;">**Another Question: How does the value of "r" change your time series? How might you interpret these dynamical changes physiologically?**</p>  
 
 **A P.S. on plotting:** If you like data visualization, check out a package called **ggplot2**! ggplot2 is part of what's called the "**tidyverse**". The tidyverse is a collection of R packages designed for data science (data manipulation, exploration, and visualization), that share underlying design philosophy, grammar, and data structures. Lots of people have lots of opinions about the merits of using base R (what we're using here, at the moment) vs. the tidyverse, but which is better usually comes down to personal preference. ggplot2 can be a great tool if you're looking to visualize your data in unique ways, or if you're looking to make your plots interactive (package: "plotly"). Check out some examples [here](https://www.r-graph-gallery.com/ggplot2-package.html). If you're interested, you can read more about ggplot2 [here](https://ggplot2.tidyverse.org), and more about the tidyverse more generally, [here](https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/).  
 
