@@ -36,7 +36,7 @@ Don't forget to fill in your name and student number at the top of the document,
 
 ## Let's Get Started!  
 ### Setting Your Working Directory:  
-We use working directories to tell R where it should look for and store files on our computers. We can start by creating a folder called "R_Projects", and a subfolder called "EEB319" on our desktops. If you right-click on that subfolder, you should be able to see its pathname (e.g. /Users/mjarviscross/Desktop/R_Projects/EEB319). As a side-note, your working directory can be thought of similarly to how you'd think about any folder. For example, let's download the course files from Quercus into our "EEB319" folders, and create subfolders for different labs.  
+We use working directories to tell R where it should look for and store files on our computers. We can start by creating a folder called "R_Projects", and a subfolder called "EEB319" on our desktops. If you right-click on that subfolder, you should be able to see its pathname (e.g. /Users/mjarviscross/Desktop/R_Projects/EEB319). As a side-note, your working directory can be thought of similarly to how you'd think about any folder. For example, let's download the course files from Quercus into our "EEB319" folders, and create subfolders for different labs (/...EEB319/Lab1/..., etc.).  
 
 There are two ways to set your working directory: 
   
@@ -51,6 +51,8 @@ This is the easier option, but not the best...
 If you set your working directory using **setwd()**, you'll be able to save all your files in the same place, but won't be able to save any of the objects or outputs you create. If you set your working directory by [creating an R Project](https://r4ds.had.co.nz/workflow-projects.html), you'll be able to save all your files in the same place *and* save all your objects and outputs. This will save you a lot of time in the long-run, and make your work more reproducible.  
 
 Go to the top-right corner of your R Studio window and click "Project: (None)". Then, click the first option in the drop-down menu, "New Project". A new window will pop-up, and give you three options: "New Directory", "Existing Directory", and "Version Control". Click "Existing Directory", and use the browse button to navigate to your "EEB319" folder. Finally, click "Create Project" in the bottom-right of the pop-up window, and you're ready to go! As a side-note, you should be able to see all the files and subfolders in your working directory in the "Files" tab of your "Files, Plots, Packages, Help, and Viewer" window of R Studio (bottom-right window in default layout).  
+
+**NOTE: You can check if you've set your working directory correctly by typing "getwd()" in the console and clicking "return".**  
 
 ### An Example for Today's Lab: Within-Host Disease Dynamics  
 To get more comfortable with R, let's go through an example! In their 1994 paper, "[Within-host population dynamics and the evolution and maintenance of microparasite virulence](https://www.journals.uchicago.edu/doi/pdfplus/10.1086/285686?casa_token=9YROqojZVtEAAAAA:5uN5aPqif9X6Ra98p2L0Dh-zsebHg855MPUw85obnC15626w55jhNWbFE_dorGoqWMhFjiiFhK3B)", Antia et al. presented a mathematical model describing the within-host population dynamics of an invading microparasite and its host's immune response.  
@@ -84,22 +86,22 @@ For today's lab, we'll be simulating a version of this model forward in time. An
 
 Now, to simulate this model forward in time, open the Lab 1 Excel sheet; come back here when you've finished simulating your data!  
 
-<*NOTE: As referenced in Table 1, values for the parameter "r" can range between 0.1 and 2.0. Play around with a few different values to see how your time series changes!**<    
+**NOTE: As referenced in Table 1, values for the parameter "r" can range between 0.1 and 2.0. Play around with a few different values to see how your time series changes!**     
 
 **...**  
 
 Welcome back! The Excel workbook asked you to save your simulations as .csv files. Let's bring those data into R!  
 
 #### Importing Data  
-Remember to make sure your .csv files are stored in your *working directory* (above). **You can import your data using read.csv():**  
+Remember to make sure your .csv files are stored in your *working directory* (above). You can copy the pathname of a given file by right-clicking a file, and holding "option"/"shift" (Mac/PC) and clicking "copy "_________" as Pathname". **You can import your data using read.csv():**  
 
-Make sure to name your data sets so you can call on them later. We've included an example wherein we name our first data set "InfectData_r03" to specify (1) that our data chronicle an infection, and (2) that in this hypothetical simulation, we assigned "r" a value of 0.3. We use "**<-**" ("option" + "-")  as an assignment operator, which assigns a value to an object. Here, the value is our data set (.csv file), and the object is "InfecData"_r03.  
+Make sure to name your data sets so you can call on them later. We've included an example wherein we name our first data set "InfectData_r03" to specify (1) that our data chronicle an infection, and (2) that in this hypothetical simulation, we assigned "r" a value of 0.3. We use "**<-**" ("option" + "-")  as an assignment operator, which assigns a value to an object. Here, the value is our data set (.csv file), and the object is "InfecData_r03".  
 ```{r, eval=TRUE}
 # NOTE 1: We can put a "#" at the beginning of a line of code if we don't want R to run that line. These lines are called "comments" and can be used to leave yourself notes explaining what your code does, why you chose to do something a certain way, etc.! It's good practice to provide clear comments so anybody (e.g. your TA) can pick up your code and understand what you're trying to do.
 
 # NOTE 2: To run a line or chunk of code in your editor, use "command + Enter" on Mac, and "Ctrl + Enter" on Windows. If you're working in your console (bottom-left window in default layout), you can just use "Enter".
 
-InfecData_r03 <- read.csv("ModelSimulation_1.csv") # NOTE: that you need to include the entire pathname for your .csv within the quotation marks.
+InfecData_r03 <- read.csv("ModelSimulation_r03.csv") # NOTE: that you need to include the entire pathname for your .csv within the quotation marks.
 ```
 
 Now, you try! Remember, you should be importing three .csv files!  
@@ -337,9 +339,15 @@ legend("topleft", legend=c("Parasites", "Immune Cells"),
   + A Q&A website for asking and answering coding questions  
   + If you're having trouble figuring out how to do something, or can't figure out why your code isn't running, check Stack Overflow! It's likely that someone's already asked and answered your question!  
   
-## Marking:  
+## Lab 1 Assignment and Marking:  
+**Assignment:**  
+1. Plot with new parameters??? And some esthetic changes  
+2. Answer all interpretation questions in EEB319IntroR.Rmd (highlighted in red)  
 
+Submit your assignment as an R Markdown file on Quercus.  
+
+**Marking scheme:**   
 * Code with clear and concise commenting: 40%  
 * Does your code run? 10%  
 * Plotting: 25%  
-* Interpretation questions: 25%  
+* Interpretation questions: 25% 

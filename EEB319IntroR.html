@@ -410,7 +410,7 @@ Download and install R onto your computer <a href="https://utstat.toronto.edu/cr
 <h2>Let’s Get Started!</h2>
 <div id="setting-your-working-directory" class="section level3">
 <h3>Setting Your Working Directory:</h3>
-<p>We use working directories to tell R where it should look for and store files on our computers. We can start by creating a folder called “R_Projects”, and a subfolder called “EEB319” on our desktops. If you right-click on that subfolder, you should be able to see its pathname (e.g. /Users/mjarviscross/Desktop/R_Projects/EEB319). As a side-note, your working directory can be thought of similarly to how you’d think about any folder. For example, let’s download the course files from Quercus into our “EEB319” folders, and create subfolders for different labs.</p>
+<p>We use working directories to tell R where it should look for and store files on our computers. We can start by creating a folder called “R_Projects”, and a subfolder called “EEB319” on our desktops. If you right-click on that subfolder, you should be able to see its pathname (e.g. /Users/mjarviscross/Desktop/R_Projects/EEB319). As a side-note, your working directory can be thought of similarly to how you’d think about any folder. For example, let’s download the course files from Quercus into our “EEB319” folders, and create subfolders for different labs (/…EEB319/Lab1/…, etc.).</p>
 <p>There are two ways to set your working directory:</p>
 <div id="setwd" class="section level4">
 <h4>setwd():</h4>
@@ -422,6 +422,7 @@ Download and install R onto your computer <a href="https://utstat.toronto.edu/cr
 <h4>Start a Project:</h4>
 <p>If you set your working directory using <strong>setwd()</strong>, you’ll be able to save all your files in the same place, but won’t be able to save any of the objects or outputs you create. If you set your working directory by <a href="https://r4ds.had.co.nz/workflow-projects.html">creating an R Project</a>, you’ll be able to save all your files in the same place <em>and</em> save all your objects and outputs. This will save you a lot of time in the long-run, and make your work more reproducible.</p>
 <p>Go to the top-right corner of your R Studio window and click “Project: (None)”. Then, click the first option in the drop-down menu, “New Project”. A new window will pop-up, and give you three options: “New Directory”, “Existing Directory”, and “Version Control”. Click “Existing Directory”, and use the browse button to navigate to your “EEB319” folder. Finally, click “Create Project” in the bottom-right of the pop-up window, and you’re ready to go! As a side-note, you should be able to see all the files and subfolders in your working directory in the “Files” tab of your “Files, Plots, Packages, Help, and Viewer” window of R Studio (bottom-right window in default layout).</p>
+<p><strong>NOTE: You can check if you’ve set your working directory correctly by typing “getwd()” in the console and clicking “return”.</strong></p>
 </div>
 </div>
 <div id="an-example-for-todays-lab-within-host-disease-dynamics" class="section level3">
@@ -480,13 +481,13 @@ Download and install R onto your computer <a href="https://utstat.toronto.edu/cr
 <strong>Question: Why did we exponentiate the second term in the first equation?</strong>
 </p>
 <p>Now, to simulate this model forward in time, open the Lab 1 Excel sheet; come back here when you’ve finished simulating your data!</p>
-<p>&lt;*NOTE: As referenced in Table 1, values for the parameter “r” can range between 0.1 and 2.0. Play around with a few different values to see how your time series changes!**&lt;</p>
+<p><strong>NOTE: As referenced in Table 1, values for the parameter “r” can range between 0.1 and 2.0. Play around with a few different values to see how your time series changes!</strong></p>
 <p><strong>…</strong></p>
 <p>Welcome back! The Excel workbook asked you to save your simulations as .csv files. Let’s bring those data into R!</p>
 <div id="importing-data" class="section level4">
 <h4>Importing Data</h4>
-<p>Remember to make sure your .csv files are stored in your <em>working directory</em> (above). <strong>You can import your data using read.csv():</strong></p>
-<p>Make sure to name your data sets so you can call on them later. We’ve included an example wherein we name our first data set “InfectData_r03” to specify (1) that our data chronicle an infection, and (2) that in this hypothetical simulation, we assigned “r” a value of 0.3. We use “<strong>&lt;-</strong>” (“option” + “-”) as an assignment operator, which assigns a value to an object. Here, the value is our data set (.csv file), and the object is “InfecData”_r03.</p>
+<p>Remember to make sure your .csv files are stored in your <em>working directory</em> (above). You can copy the pathname of a given file by right-clicking a file, and holding “option”/“shift” (Mac/PC) and clicking “copy”_________&quot; as Pathname&quot;. <strong>You can import your data using read.csv():</strong></p>
+<p>Make sure to name your data sets so you can call on them later. We’ve included an example wherein we name our first data set “InfectData_r03” to specify (1) that our data chronicle an infection, and (2) that in this hypothetical simulation, we assigned “r” a value of 0.3. We use “<strong>&lt;-</strong>” (“option” + “-”) as an assignment operator, which assigns a value to an object. Here, the value is our data set (.csv file), and the object is “InfecData_r03”.</p>
 <pre class="r"><code># NOTE 1: We can put a &quot;#&quot; at the beginning of a line of code if we don't want R to run that line. These lines are called &quot;comments&quot; and can be used to leave yourself notes explaining what your code does, why you chose to do something a certain way, etc.! It's good practice to provide clear comments so anybody (e.g. your TA) can pick up your code and understand what you're trying to do.
 
 # NOTE 2: To run a line or chunk of code in your editor, use &quot;command + Enter&quot; on Mac, and &quot;Ctrl + Enter&quot; on Windows. If you're working in your console (bottom-left window in default layout), you can just use &quot;Enter&quot;.
@@ -774,17 +775,17 @@ legend(&quot;topleft&quot;, legend=c(&quot;Parasites&quot;, &quot;Immune Cells&q
 </ul></li>
 </ul>
 </div>
-<div id="marking" class="section level2">
-<h2>Marking:</h2>
-<ul>
-<li>Code with clear and concise commenting: 40%<br />
-</li>
-<li>Does your code run? 10%<br />
-</li>
-<li>Plotting: 25%<br />
-</li>
-<li>Interpretation questions: 25%</li>
-</ul>
+<div id="lab-1-assignment-and-marking" class="section level2">
+<h2>Lab 1 Assignment and Marking:</h2>
+<p><strong>Assignment:</strong><br />
+1. Plot with new parameters??? And some esthetic changes<br />
+2. Answer all interpretation questions in EEB319IntroR.Rmd (highlighted in red)</p>
+<p>Submit your assignment as an R Markdown file on Quercus.</p>
+<p><strong>Marking scheme:</strong><br />
+* Code with clear and concise commenting: 40%<br />
+* Does your code run? 10%<br />
+* Plotting: 25%<br />
+* Interpretation questions: 25%</p>
 </div>
 
 
