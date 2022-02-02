@@ -17,10 +17,16 @@ R is a computer programming language and environment for statistical computing a
 
 ## Downloading R and R Studio  
 ***DO THIS BEFORE LAB 1 STARTS, PLEASE!***      
-Download and install R onto your computer [here](https://utstat.toronto.edu/cran/). After downloading/installing R, you'll want to download/install [RStudio](https://www.rstudio.com/products/rstudio/), which is just R with a graphical user interface (GUI). Try opening R Studio to make sure it works. You should see four windows: the top-left window is your editor, where you can write, run, and save scripts. The bottom-left window is your console/terminal, where you can run code without saving it in a script. The top-right window is your environment, where you can find any objects you've defined. The bottom-right window is where you can navigate between files in your working directory, view plots you've generated, or read package documentation. Don't panic! We'll try to go through all of this in detail during lab.  
+Download and install R onto your computer [here](https://utstat.toronto.edu/cran/). After downloading/installing R, you'll want to download/install [RStudio](https://www.rstudio.com/products/rstudio/), which is just R with a graphical user interface (GUI). Try opening R Studio to make sure it works. You should see four panes: the top-left pane is your editor, where you can write, run, and save scripts (Fig. 1). The bottom-left pane is your console/terminal, where you can run code without saving it in a script. The top-right pane is your environment, where you can find any objects you've defined. The bottom-right pane is where you can navigate between files in your working directory, view plots you've generated, or read package documentation. Don't panic! We'll try to go through all of this in detail during lab.  
+
+![**Figure 1:** Here's an example of my RStudio window, as I write this lab!](Lab1_Images/RStudio_Window_Ex.png "Figure 1")
+
+You might notice that my RStudio window looks different than yours; my panes are arranged differently, and my editor theme sports a cooler colour combination. You can change your pane layout and editor theme by going to the top-left corner of your screen, and clicking **RStudio -> Preferences... -> Appearance/Pane Layout**.  
 
 ## R Markdown
-This document, along with most of the labs in this course, and your assignment submissions, will be written using R Markdown. R Markdown is a file format for making dynamic documents (documents that can be continually edited and updated) with R. R Markdown documents are written in markdown (an easy-to-write plain text format, similar to HTML and LaTex (pronounced "law-tech")) and contain chunks of embedded R code. More generally, writing in markdown allows you to create documents that smoothly integrate chunks of text, mathametical equations, hyperlinks, chunks of code, and so on. You can open and edit R Markdown files (.Rmd) in R Studio. To learn more about R Markdown, go [here](https://rmarkdown.rstudio.com/articles_intro.html), or [here](https://cran.r-project.org/web/packages/stationery/vignettes/Rmarkdown.pdf).    
+This document, along with most of the labs in this course, and your assignment submissions, will be written using R Markdown. R Markdown is a file format for making dynamic documents (documents that can be continually edited and updated) with R. R Markdown documents are written in markdown (an easy-to-write plain text format, similar to HTML and LaTex (pronounced "law-tech")) and contain chunks of embedded R code (Fig. 2). More generally, writing in markdown allows you to create documents that smoothly integrate chunks of text, mathametical equations, hyperlinks, chunks of code, and so on. You can open and edit R Markdown files (.Rmd) in R Studio. To learn more about R Markdown, go [here](https://rmarkdown.rstudio.com/articles_intro.html), or [here](https://cran.r-project.org/web/packages/stationery/vignettes/Rmarkdown.pdf).  
+
+![**Figure 2:** An example of how we integrate chunks of text (dark blue) with chunks of code (light blue).](Lab1_Images/Code_v_Text.png "Figure 2")
 
 **AN IMPORTANT NOTE:** When we write Markdown documents, we can export .Rmd files to PDF, Word, or HTML via a process called "knitting". You should be able to knit this file ("EEB319IntroR.Rmd") to HTML by clicking "knit" at the top left of this page. Once R has finished knitting this file to HTML, a preview window will pop up. You can view the knitted document in HTML by clicking "Open in Browser". Opening this document in a browser will also show you how the formatting of a .Rmd file maps onto the knitted version of the document.  
 
@@ -55,7 +61,9 @@ Go to the top-right corner of your R Studio window and click "Project: (None)". 
 **NOTE: You can check if you've set your working directory correctly by typing "getwd()" in the console and clicking "return".**  
 
 ### An Example for Today's Lab: Within-Host Disease Dynamics  
-To get more comfortable with R, let's go through an example! In their 1994 paper, "[Within-host population dynamics and the evolution and maintenance of microparasite virulence](https://www.journals.uchicago.edu/doi/pdfplus/10.1086/285686?casa_token=9YROqojZVtEAAAAA:5uN5aPqif9X6Ra98p2L0Dh-zsebHg855MPUw85obnC15626w55jhNWbFE_dorGoqWMhFjiiFhK3B)", Antia et al. presented a mathematical model describing the within-host population dynamics of an invading microparasite and its host's immune response.  
+To get more comfortable with R, let's go through an example! Very broadly, population ecologists are interested in asking how (a)biotic factors affect populations, and how populations will change over time. For example, we often use population ecology to think about how a predator population interacts with its prey population. Similarly, over the past few decades, disease ecologists have co-opted consumer-resource frameworks to describe within-host disease dynamics, given that a host’s immune system can seek out and destroy infecting parasites as a predator would its prey (see: [Anderson and May, 1979](https://www.nature.com/articles/280361a0.pdf?origin=ppub)).  
+
+In their 1994 paper, "[Within-host population dynamics and the evolution and maintenance of microparasite virulence](https://www.journals.uchicago.edu/doi/pdfplus/10.1086/285686?casa_token=9YROqojZVtEAAAAA:5uN5aPqif9X6Ra98p2L0Dh-zsebHg855MPUw85obnC15626w55jhNWbFE_dorGoqWMhFjiiFhK3B)", Antia et al. presented a mathematical model describing the within-host population dynamics of an invading microparasite and its host's immune response.  
 
 \begin{align}
     &\frac{dP}{dt} = rP - kPI \text{,  if P < D and P ➝ 0 if P > D}&\\
@@ -64,8 +72,8 @@ To get more comfortable with R, let's go through an example! In their 1994 paper
 
 Where:  
 ```{r, echo=FALSE, results='asis'}
-Parameters <- c("r, Intrinsic growth rate of parasite", "k, Rate of destruction of parasite by host immune system", "ρ, Maximum growth rate of the immune system", "𝜙, Parasite density at which growth rate of host immune system is half its maximum", "ts, How often we are evaluating our model", "D, Lethal within-host parasite density")
-Values <- c("0.1-2.0", "0.001", "1", "1000", "0.1", "10<sup>9</sup>")
+Parameters <- c("r, Intrinsic growth rate of parasite", "k, Rate of destruction of parasite by host immune system", "ρ, Maximum growth rate of the immune system", "𝜙, Parasite density at which growth rate of host immune system is half its maximum", "D, Lethal within-host parasite density")
+Values <- c("0.1-2.0", "0.001", "1", "1000", "10<sup>9</sup>")
 parms_table <- data.frame(Parameters, Values)
 library(knitr)
 kable(parms_table, caption = "Table 1")
@@ -82,7 +90,9 @@ For today's lab, we'll be simulating a version of this model forward in time. An
     &I_{t+1} = (1 + ρ\frac{P}{P + ϕ}ts)I_t&\\
 \end{align}  
 
-<p style="color: red;">**Question: What differentiates continuous and discrete time models? Why might someone choose to use a continuous time model over a discrete time model, and vice versa?**</p>  
+**NOTE:** We've added a parameter, *ts*, to the discretized version of the model. *ts* is our time step, or, step size, and denotes how often we evaluate our model. Today, we'll be using a step size of 0.1.  
+
+<p style="color: red;">**Question: What differentiates continuous and discrete time models? Why might someone choose to use a continuous time model over a discrete time model, or vice versa? Finally, name and explain one advantage and one disadvantage to using a smaller step size.**</p>  
 
 Now, to simulate this model forward in time, open the Lab 1 Excel sheet; come back here when you've finished simulating your data!  
 
