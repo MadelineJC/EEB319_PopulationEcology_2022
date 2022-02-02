@@ -1,6 +1,6 @@
 ---
 title: 'EEB319: Intro to R'
-author: "M. Jarvis-Cross, Last Updated: January 2022"
+author: "M. Jarvis-Cross, Last Updated: 1 February 2022"
 output: html_document
 ---
 
