@@ -171,14 +171,18 @@ parameters <- c(r1,r2,K1,K2,a12,a21)  # order of parameters set for LVcomp funct
 
 You can also present them in a table:  
 ```{r, echo=FALSE, results='asis'}
-Species_r <- c("Sp. 1, r1", "Sp. 2, r1"); t2x <- c("t_2x", "t_2x"); K <- c("K1", "K1"); CompCoeff <- c("a21", "a12")
+Species_r <- c("Sp. 1, r<sub>1</sub>", "Sp. 2, r<sub>1</sub>")
+t2x <- c("t<sub>2x</sub>", "t<sub>2x</sub>")
+K <- c("K<sub>1</sub>", "K<sub>1</sub>")
+CompCoeff <- c("α<sub>21</sub>", "α<sub>12</sub>")
+
 parms_table2 <- data.frame(Species_r, t2x, K, CompCoeff)
 colnames(parms_table2) <- c("Species r (units)", "t<sub>2x</sub> (units)", "K (units)", "Competition Coefficient on Other Species (units)")
 library(knitr)
 kable(parms_table2, caption = "Parameters")
 ```
 
-## Visualizing population dynamics with a Phase Plane Diagram
+### Visualizing population dynamics with a Phase Plane Diagram
 We now have everything needed to plot a Phase Plane diagram, which will allow us to visualize  population trajectories in this dynamical system. Here, our dynamical system is a set of Ordinary Differential Equations (ODE; for $\frac{dN_1}{dt}$ and $\frac{dN_2}{dt}$) that represent the abundances of two interacting species over time. In Phase Plane, net zero-growth isoclines (NZGI) indicate where $\frac{dN_1}{dt}$ and $\frac{dN_2}{dt} = 0$. Where two net zero-growth isoclines intersect, we have an equilibrium (stable or unstable). A flow field of arrows shows how the two populations change through time.
 
 Here's an example of a phase plane diagram:  
@@ -216,7 +220,7 @@ legend("topright", legend = c("Sp. 1 NZGI", "Sp. 2 NZGI", "Population Trajectory
 ```
 
 Now, try plotting a phase plane diagram for Gause's data!  
-**REMEMBER:** You should play with your initial population abundances to see if initial abundances affect your outcomes, and input your own parameter values for intrinsic growth rates, carying capacities and competition coefficients. Make sure you change the axis labels and main title of your plot to represent your own work!  
+**REMEMBER:** You should play with your initial population abundances to see if initial abundances affect your outcomes, and input your own parameter values for intrinsic growth rates, carrying capacities and competition coefficients. Make sure you change the axis labels and main title of your plot to represent your own work!  
 ```{r, eval=TRUE}
 # YOUR WORK HERE!
 ```
