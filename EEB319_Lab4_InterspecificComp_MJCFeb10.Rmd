@@ -180,7 +180,7 @@ CompCoef <- c(10, 2)   # Competition Coefficient on other Species: α21 for Sp. 
 parms_table <- data.frame(Species, r, t2x, K, CompCoef)
 colnames(parms_table) <- c("Species", "r (units)", "t<sub>2x</sub> (units)", "K (units)", "α on other species (units)")
 library(knitr)
-kable(parms_table, caption = "Table X. Population parameters for two butterfly species.")
+kable(parms_table, caption = "Table X. Population parameters for two butterfly species.", align = "c")
 ```
 
 ### Visualizing population dynamics with a Phase Plane Diagram
