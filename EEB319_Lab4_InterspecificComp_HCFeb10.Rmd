@@ -227,9 +227,7 @@ Now, try plotting a phase plane diagram for Gause's data!
 ```
 
 ## Lab 4 Individual Assignment
-Submit your assignment as an R Markdown file on Quercus.  
-
-Please also submit your R Project data, so that your TA can load your environment when marking your lab. If your TA is able to load your environment, they'll be able to call on any objects you assigned, including your data, which will take us out of the troublesome waters of pathnames, and into the smooth seas of path independecy and reproducilibity. In Lab 1, you created an R Project when setting your working directory. Your R Project data is saved to an .Rproj file everytime you close are and are offered the option to save your 
+Submit your assignment as an R Markdown file on Quercus 
 
 #### 1. Introduction: 20%
 a) Mention which data set you are using (with reference) and what species were studied.
