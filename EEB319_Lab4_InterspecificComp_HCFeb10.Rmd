@@ -171,15 +171,16 @@ parameters <- c(r1,r2,K1,K2,a12,a21)  # order of parameters set for LVcomp funct
 
 You can also present them in a table:  
 ```{r, echo=FALSE, results='asis'}
-Species_r <- c("Sp. 1, r<sub>1</sub>", "Sp. 2, r<sub>1</sub>")
-t2x <- c("t<sub>2x</sub>", "t<sub>2x</sub>")
-K <- c("K<sub>1</sub>", "K<sub>1</sub>")
-CompCoeff <- c("α<sub>21</sub>", "α<sub>12</sub>")
+Species <- c("Sp. 1", "Sp. 2")
+r <- c(10, 2)
+t2x <- c(10, 2)
+K <- c(10, 2)
+CompCoef <- c(10, 2)   # Competition Coefficient on other Species: α21 for Sp. 1, α12 for Sp. 2
 
-parms_table2 <- data.frame(Species_r, t2x, K, CompCoeff)
-colnames(parms_table2) <- c("Species r (units)", "t<sub>2x</sub> (units)", "K (units)", "Competition Coefficient on Other Species (units)")
+parms_table <- data.frame(Species, r, t2x, K, CompCoef)
+colnames(parms_table) <- c("Species", "r (units)", "t<sub>2x</sub> (units)", "K (units)", "α on other species (units)")
 library(knitr)
-kable(parms_table2, caption = "Parameters")
+kable(parms_table, caption = "Table X. Population parameters for two butterfly species.")
 ```
 
 ### Visualizing population dynamics with a Phase Plane Diagram
@@ -227,6 +228,8 @@ Now, try plotting a phase plane diagram for Gause's data!
 
 ## Lab 4 Individual Assignment
 Submit your assignment as an R Markdown file on Quercus.  
+
+Please also submit your R Project data, so that your TA can load your environment when marking your lab. If your TA is able to load your environment, they'll be able to call on any objects you assigned, including your data, which will take us out of the troublesome waters of pathnames, and into the smooth seas of path independecy and reproducilibity. In Lab 1, you created an R Project when setting your working directory. Your R Project data is saved to an .Rproj file everytime you close are and are offered the option to save your 
 
 #### 1. Introduction: 20%
 a) Mention which data set you are using (with reference) and what species were studied.
